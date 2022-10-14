@@ -8,23 +8,23 @@ async function main() {
 	const ethers = hre.ethers;
 
 	let multisig = "0xa70b638B70154EdfCbb8DbbBd04900F328F32c35";
-	let ctxAmount = ethers.utils.parseEther("6000");
+	let ATGAmount = ethers.utils.parseEther("6000");
 	let usdcAmout = ethers.utils.parseUnits("1060000", 6);
 	let ethAmount = ethers.utils.parseEther("55");
 	console.log(ethAmount.toString());
-	let ctx = await deployments.get("Ctx");
-	let ctxContract = await ethers.getContractAt("Ctx", ctx.address);
+	let ATG = await deployments.get("ATG");
+	let ATGContract = await ethers.getContractAt("ATG", ATG.address);
 	let usdc = "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48";
-	let usdcContract = await ethers.getContractAt("Ctx", usdc);
+	let usdcContract = await ethers.getContractAt("ATG", usdc);
 
 	const abi = new ethers.utils.AbiCoder();
-	const targets = [multisig, usdc, ctx.address];
+	const targets = [multisig, usdc, ATG.address];
 	const values = [ethAmount, BigNumber.from(0), BigNumber.from(0)];
 	const signatures = ["", "transfer(address,uint256)", "transfer(address,uint256)"];
 	const calldatas = [
 		"0x000000000000000000000000000000000000000000000000000000000000000000000000",
 		abi.encode(["address", "uint256"], [multisig, usdcAmout]),
-		abi.encode(["address", "uint256"], [multisig, ctxAmount]),
+		abi.encode(["address", "uint256"], [multisig, ATGAmount]),
 	];
 	const description = "CIP-12: Q1 + Q2 Brand, Marketing & Development Budget";
 	console.log(targets);
@@ -36,8 +36,8 @@ async function main() {
 	let balance = await ethers.provider.getBalance(multisig);
 	console.log("Old Balance is: ", ethers.utils.formatEther(balance));
 
-	let ctxbalance = await ctxContract.balanceOf(multisig);
-	console.log("multisig old CTX balance", ethers.utils.formatEther(ctxbalance));
+	let ATGbalance = await ATGContract.balanceOf(multisig);
+	console.log("multisig old ATG balance", ethers.utils.formatEther(ATGbalance));
 
 	let usdcbalance = await usdcContract.balanceOf(multisig);
 	console.log("multisig old USDC balance", ethers.utils.formatUnits(usdcbalance, 6));
@@ -63,8 +63,8 @@ async function main() {
 
 		balance = await ethers.provider.getBalance(multisig);
 		console.log("New Balance is: ", ethers.utils.formatEther(balance));
-		ctxbalance = await ctxContract.balanceOf(multisig);
-		console.log("multisig new CTX balance", ethers.utils.formatEther(ctxbalance));
+		ATGbalance = await ATGContract.balanceOf(multisig);
+		console.log("multisig new ATG balance", ethers.utils.formatEther(ATGbalance));
 
 		usdcbalance = await usdcContract.balanceOf(multisig);
 		console.log("multisig new USDC balance", ethers.utils.formatUnits(usdcbalance, 6));

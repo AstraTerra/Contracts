@@ -9,10 +9,10 @@ async function main() {
 
 	const amount = ethers.utils.parseEther("23906");
 	const multisign = "0xa70b638B70154EdfCbb8DbbBd04900F328F32c35";
-	let ctx = await deployments.get("Ctx");
-	let ctxContract = await ethers.getContractAt("Ctx", ctx.address);
+	let ATG = await deployments.get("ATG");
+	let ATGContract = await ethers.getContractAt("ATG", ATG.address);
 	const abi = new ethers.utils.AbiCoder();
-	const targets = [ctx.address];
+	const targets = [ATG.address];
 	const values: [BigNumber] = [BigNumber.from(0)];
 	const signatures = ["transfer(address,uint256)"];
 	const calldatas = [abi.encode(["address", "uint256"], [multisign, amount])];
@@ -23,8 +23,8 @@ async function main() {
 	console.log(calldatas);
 	console.log(description);
 
-	let balance = await ctxContract.balanceOf(multisign);
-	console.log("Multisign old CTX balance", ethers.utils.formatEther(balance));
+	let balance = await ATGContract.balanceOf(multisign);
+	console.log("Multisign old ATG balance", ethers.utils.formatEther(balance));
 
 	if (hardhatArguments.network === "hardhat") {
 		//Fund Multisign with ETH
@@ -44,8 +44,8 @@ async function main() {
 
 		// Validate Results
 		console.log("==================Check Balance==================");
-		balance = await ctxContract.balanceOf(multisign);
-		console.log("Multisign new CTX balance", ethers.utils.formatEther(balance));
+		balance = await ATGContract.balanceOf(multisign);
+		console.log("Multisign new ATG balance", ethers.utils.formatEther(balance));
 	}
 }
 

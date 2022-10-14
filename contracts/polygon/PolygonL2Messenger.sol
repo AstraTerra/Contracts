@@ -99,7 +99,7 @@ contract PolygonL2Messenger is IFxMessageProcessor, ReentrancyGuard {
 
   /**
    * @dev Update the expected address of contract originating from a cross-chain transaction
-   * @param _fxRootSender contract originating a cross-chain transaction- likely the cryptex timelock
+   * @param _fxRootSender contract originating a cross-chain transaction- likely the AstraTerra timelock
    **/
   function updateFxRootSender(address _fxRootSender) external onlyThis {
     require(

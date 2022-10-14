@@ -7,19 +7,19 @@ const ethHandler: DeployFunction = async function (
     hre: HardhatRuntimeEnvironment
 ) {
     if (hardhatArguments.network === "polygon") {
-        const tcapOracle = await deployments.getOrNull("TCAPOracle");
+        const HMKTOracle = await deployments.getOrNull("HMKTOracle");
         const ethOracle = await deployments.getOrNull("ETHOracle");
         const ethVault = await deployments.getOrNull("ETHVaultHandler");
 
         const { log } = deployments;
 
-        if (!tcapOracle) {
+        if (!HMKTOracle) {
             const namedAccounts = await hre.getNamedAccounts();
             // Params TODO: complete address
-            const aggregator = "0xBb9749B5AD68574C106AC4F9cd5E1c400dbb88C3"; // TCAP Chainlink Oracle
+            const aggregator = "0xBb9749B5AD68574C106AC4F9cd5E1c400dbb88C3"; // HMKT Chainlink Oracle
 
-            const tcapOracleDeployment = await deployments.deploy(
-                "TCAPOracle",
+            const HMKTOracleDeployment = await deployments.deploy(
+                "HMKTOracle",
                 {
                     contract: "ChainlinkOracle",
                     from: namedAccounts.deployer,
@@ -29,10 +29,10 @@ const ethHandler: DeployFunction = async function (
                 }
             );
             log(
-                `TCAP Oracle deployed at ${tcapOracleDeployment.address} for ${tcapOracleDeployment.receipt?.gasUsed}`
+                `HMKT Oracle deployed at ${HMKTOracleDeployment.address} for ${HMKTOracleDeployment.receipt?.gasUsed}`
             );
         } else {
-            log("TCAP Oracle already deployed");
+            log("HMKT Oracle already deployed");
         }
 
         if (!ethOracle) {
@@ -47,10 +47,10 @@ const ethHandler: DeployFunction = async function (
                 log: true,
             });
             log(
-                `TCAP Oracle deployed at ${ethOracleDeployment.address} for ${ethOracleDeployment.receipt?.gasUsed}`
+                `HMKT Oracle deployed at ${ethOracleDeployment.address} for ${ethOracleDeployment.receipt?.gasUsed}`
             );
         } else {
-            log("TCAP Oracle already deployed");
+            log("HMKT Oracle already deployed");
         }
 
         if (!ethVault) {
@@ -58,8 +58,8 @@ const ethHandler: DeployFunction = async function (
             const orchestratorDeployment = await deployments.get(
                 "Orchestrator"
             );
-            const tcapDeployment = await deployments.get("TCAP");
-            const tcapOracleDeployment = await deployments.get("TCAPOracle");
+            const HMKTDeployment = await deployments.get("HMKT");
+            const HMKTOracleDeployment = await deployments.get("HMKTOracle");
             const ethOracleDeployment = await deployments.get("ETHOracle");
             const maticOracleDeployment = await deployments.get("MATICOracle");
 
@@ -69,8 +69,8 @@ const ethHandler: DeployFunction = async function (
             let ratio = "150";
             let burnFee = "1";
             let liquidationPenalty = "10";
-            let tcapOracle = tcapOracleDeployment.address;
-            let tcapAddress = tcapDeployment.address;
+            let HMKTOracle = HMKTOracleDeployment.address;
+            let HMKTAddress = HMKTDeployment.address;
             let collateralAddress =
                 "0x7ceb23fd6bc0add59e62ac25578270cff1b9f619";
             let maticOracle = maticOracleDeployment.address;
@@ -89,8 +89,8 @@ const ethHandler: DeployFunction = async function (
                         ratio,
                         burnFee,
                         liquidationPenalty,
-                        tcapOracle,
-                        tcapAddress,
+                        HMKTOracle,
+                        HMKTAddress,
                         collateralAddress,
                         ethOracle,
                         maticOracle,

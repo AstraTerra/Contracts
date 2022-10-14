@@ -6,7 +6,7 @@ module.exports = async ({ deployments }: any) => {
         let DAIHandler = await deployments.get("DAIVaultHandler");
         let WETHHandler = await deployments.get("WETHVaultHandler");
         let OrchestratorDeployment = await deployments.get("Orchestrator");
-        let tcap = await deployments.get("TCAP");
+        let HMKT = await deployments.get("HMKT");
 
         let orchestrator = await ethershardhat.getContractAt(
             "Orchestrator",
@@ -14,8 +14,8 @@ module.exports = async ({ deployments }: any) => {
         );
 
         console.log("Adding vault Handlers");
-        await orchestrator.addTCAPVault(tcap.address, DAIHandler.address);
-        await orchestrator.addTCAPVault(tcap.address, WETHHandler.address);
+        await orchestrator.addHMKTVault(HMKT.address, DAIHandler.address);
+        await orchestrator.addHMKTVault(HMKT.address, WETHHandler.address);
     }
 };
 module.exports.tags = ["Initialize"];

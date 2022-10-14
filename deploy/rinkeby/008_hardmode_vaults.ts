@@ -19,8 +19,8 @@ const hardmodeVaultHandlers: DeployFunction = async function (hre: HardhatRuntim
 		const ratio = "110";
 		const burnFee = "1";
 		const liquidationPenalty = "5";
-		const tcapOracle = "0x87388c142a3848F966FBA7Db22663D9CCa7d8a86";
-		const tcapAddress = "0x565224C2b5Bdf33f3970d35f82945075F90128F4";
+		const HMKTOracle = "0x87388c142a3848F966FBA7Db22663D9CCa7d8a86";
+		const HMKTAddress = "0x565224C2b5Bdf33f3970d35f82945075F90128F4";
 		const ethOracle = "0x731Aa03C683Afb292732C31c1d50C491B8d8043F";
 		const daiOracle = "0xb50365a53EB0d8f214FFD0Cc0F2936BD877B3e17";
 		const usdcOracle = "0x1b793DBc38B94E5C81ee383934404f84a7acE01E";
@@ -40,8 +40,8 @@ const hardmodeVaultHandlers: DeployFunction = async function (hre: HardhatRuntim
 					ratio,
 					burnFee,
 					liquidationPenalty,
-					tcapOracle,
-					tcapAddress,
+					HMKTOracle,
+					HMKTAddress,
 					WETHContract.address,
 					ethOracle,
 					ethOracle,
@@ -68,8 +68,8 @@ const hardmodeVaultHandlers: DeployFunction = async function (hre: HardhatRuntim
 					ratio,
 					burnFee,
 					liquidationPenalty,
-					tcapOracle,
-					tcapAddress,
+					HMKTOracle,
+					HMKTAddress,
 					DAIContract.address,
 					daiOracle,
 					ethOracle,
@@ -96,8 +96,8 @@ const hardmodeVaultHandlers: DeployFunction = async function (hre: HardhatRuntim
 					ratio,
 					burnFee,
 					liquidationPenalty,
-					tcapOracle,
-					tcapAddress,
+					HMKTOracle,
+					HMKTAddress,
 					USDCContract.address,
 					usdcOracle,
 					ethOracle,

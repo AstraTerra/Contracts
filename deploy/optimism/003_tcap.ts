@@ -3,31 +3,31 @@ import { DeployFunction } from "hardhat-deploy/types";
 import { deployments, hardhatArguments } from "hardhat";
 import "hardhat-deploy/dist/src/type-extensions";
 
-const TCAP: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
+const HMKT: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 	if (hardhatArguments.network === "optimism") {
 		const { log } = deployments;
 
 		const namedAccounts = await hre.getNamedAccounts();
 		const optimisticOrchestrator = await deployments.getOrNull("OptimisticOrchestrator");
-		const tcap = await deployments.getOrNull("TCAP");
+		const HMKT = await deployments.getOrNull("HMKT");
 
-		if (optimisticOrchestrator && !tcap) {
+		if (optimisticOrchestrator && !HMKT) {
 			const name = "Total Crypto Market Cap";
-			const symbol = "TCAP";
+			const symbol = "HMKT";
 			const cap = 0;
 			const orchestratorAddress = optimisticOrchestrator.address;
 
-			const deployResult = await deployments.deploy("TCAP", {
+			const deployResult = await deployments.deploy("HMKT", {
 				from: namedAccounts.deployer,
 				skipIfAlreadyDeployed: true,
 				log: true,
 				args: [name, symbol, cap, orchestratorAddress],
 			});
-			log(`TCAP deployed at ${deployResult.address} for ${deployResult.receipt?.gasUsed}`);
+			log(`HMKT deployed at ${deployResult.address} for ${deployResult.receipt?.gasUsed}`);
 		} else {
-			log("TCAP already deployed or Orchestrator not found");
+			log("HMKT already deployed or Orchestrator not found");
 		}
 	}
 };
 
-export default TCAP;
+export default HMKT;

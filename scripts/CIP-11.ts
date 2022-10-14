@@ -8,18 +8,18 @@ async function main() {
 	const ethers = hre.ethers;
 
 	let orchestratorAddress = "0x373C74BcE7893097ab26d22f05691907D4f2c18e";
-	let tcap = await deployments.get("TCAP");
-	let tcapContract = await ethers.getContractAt("TCAP", tcap.address);
+	let HMKT = await deployments.get("HMKT");
+	let HMKTContract = await ethers.getContractAt("HMKT", HMKT.address);
 	let aaveVault = await deployments.get("AaveVaultHandler");
 	let linkVault = await deployments.get("LinkVaultHandler");
 
 	const abi = new ethers.utils.AbiCoder();
 	const targets = [orchestratorAddress, orchestratorAddress];
 	const values = [BigNumber.from(0), BigNumber.from(0)];
-	const signatures = ["addTCAPVault(address,address)", "addTCAPVault(address,address)"];
+	const signatures = ["addHMKTVault(address,address)", "addHMKTVault(address,address)"];
 	const calldatas = [
-		abi.encode(["address", "address"], [tcap.address, aaveVault.address]),
-		abi.encode(["address", "address"], [tcap.address, linkVault.address]),
+		abi.encode(["address", "address"], [HMKT.address, aaveVault.address]),
+		abi.encode(["address", "address"], [HMKT.address, linkVault.address]),
 	];
 	const description = "CIP-11: Add AAVE and LINK Vaults";
 	console.log(targets);
@@ -28,10 +28,10 @@ async function main() {
 	console.log(calldatas);
 	console.log(description);
 
-	let aaveStatus = await tcapContract.vaultHandlers(aaveVault.address);
+	let aaveStatus = await HMKTContract.vaultHandlers(aaveVault.address);
 	console.log(aaveStatus);
 
-	let linkStatus = await tcapContract.vaultHandlers(linkVault.address);
+	let linkStatus = await HMKTContract.vaultHandlers(linkVault.address);
 	console.log(linkStatus);
 
 	if (hardhatArguments.network === "hardhat") {
@@ -53,9 +53,9 @@ async function main() {
 		// Validate Results
 		console.log("==================Check Results==================");
 
-		aaveStatus = await tcapContract.vaultHandlers(aaveVault.address);
+		aaveStatus = await HMKTContract.vaultHandlers(aaveVault.address);
 		console.log(aaveStatus);
-		linkStatus = await tcapContract.vaultHandlers(linkVault.address);
+		linkStatus = await HMKTContract.vaultHandlers(linkVault.address);
 		console.log(linkStatus);
 	}
 }

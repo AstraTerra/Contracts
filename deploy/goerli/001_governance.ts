@@ -4,7 +4,7 @@ import { deployments, hardhatArguments } from "hardhat";
 
 module.exports = async ({ ethers, getNamedAccounts, deployments }: any) => {
 	if (hardhatArguments.network === "goerli") {
-		const Ctx = await deployments.getOrNull("Ctx");
+		const ATG = await deployments.getOrNull("ATG");
 		const { log } = deployments;
 		const namedAccounts = await getNamedAccounts();
 		const oneYear = 1675175407; // Mon, January 24 2023
@@ -12,7 +12,7 @@ module.exports = async ({ ethers, getNamedAccounts, deployments }: any) => {
 		const [owner] = await ethers.getSigners();
 
 		let nonce = await owner.getTransactionCount();
-		const ctxAddress = ethers.utils.getContractAddress({
+		const ATGAddress = ethers.utils.getContractAddress({
 			from: namedAccounts.deployer,
 			nonce: nonce++,
 		});
@@ -27,14 +27,14 @@ module.exports = async ({ ethers, getNamedAccounts, deployments }: any) => {
 			nonce: nonce++,
 		});
 		try {
-			const ctxDeployment = await deployments.get("Ctx");
+			const ATGDeployment = await deployments.get("ATG");
 		} catch (error) {
 			log(error.message);
-			const ctxDeployment = await deployments.deploy("Ctx", {
+			const ATGDeployment = await deployments.deploy("ATG", {
 				from: namedAccounts.deployer,
 				args: [namedAccounts.deployer, timelockAddress, oneYear],
 			});
-			log(`Ctx deployed at ${ctxDeployment.address} for ${ctxDeployment.receipt?.gasUsed}`);
+			log(`ATG deployed at ${ATGDeployment.address} for ${ATGDeployment.receipt?.gasUsed}`);
 		}
 
 		const timelockDeployment = await deployments.deploy("Timelock", {
@@ -48,7 +48,7 @@ module.exports = async ({ ethers, getNamedAccounts, deployments }: any) => {
 
 		const governorDeployment = await deployments.deploy("GovernorBeta", {
 			from: namedAccounts.deployer,
-			args: [timelockAddress, ctxAddress, namedAccounts.deployer],
+			args: [timelockAddress, ATGAddress, namedAccounts.deployer],
 		});
 
 		log(

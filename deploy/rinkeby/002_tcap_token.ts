@@ -10,27 +10,27 @@ module.exports = async ({ getNamedAccounts, deployments }: any) => {
 
 		let orchestrator = await deployments.get("Orchestrator");
 
-		let TCAP;
+		let HMKT;
 		try {
-			TCAP = await deployments.get("TCAP");
+			HMKT = await deployments.get("HMKT");
 		} catch (error) {
 			log(error.message);
 
 			const deployResult = await deployIfDifferent(
 				["data"],
-				"TCAP",
+				"HMKT",
 				{ from: deployer },
-				"TCAP",
+				"HMKT",
 				name,
 				symbol,
 				0,
 				orchestrator.address
 			);
-			TCAP = await deployments.get("TCAP");
+			HMKT = await deployments.get("HMKT");
 			if (deployResult.newlyDeployed) {
-				log(`TCAP deployed at ${TCAP.address} for ${deployResult.receipt.gasUsed}`);
+				log(`HMKT deployed at ${HMKT.address} for ${deployResult.receipt.gasUsed}`);
 			}
 		}
 	}
 };
-module.exports.tags = ["TCAP"];
+module.exports.tags = ["HMKT"];

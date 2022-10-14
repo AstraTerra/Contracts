@@ -7,9 +7,9 @@ const governance: DeployFunction = async function (
 ) {
     if (hardhatArguments.network === "kovan") {
 				console.log("Kovan Deploy");
-				const Ctx = await deployments.getOrNull("Ctx");
+				const ATG = await deployments.getOrNull("ATG");
         const { log } = deployments;
-        if (!Ctx) {
+        if (!ATG) {
             const ethers = hre.ethers;
 
             const namedAccounts = await hre.getNamedAccounts();
@@ -18,7 +18,7 @@ const governance: DeployFunction = async function (
             const [owner] = await ethers.getSigners();
 
             let nonce = await owner.getTransactionCount();
-            const ctxAddress = ethers.utils.getContractAddress({
+            const ATGAddress = ethers.utils.getContractAddress({
                 from: namedAccounts.deployer,
                 nonce: nonce++,
             });
@@ -33,13 +33,13 @@ const governance: DeployFunction = async function (
                 nonce: nonce++,
             });
 
-            const ctxDeployment = await deployments.deploy("Ctx", {
+            const ATGDeployment = await deployments.deploy("ATG", {
                 from: namedAccounts.deployer,
                 args: [namedAccounts.deployer, timelockAddress, oneYear],
             });
 
             log(
-                `Ctx deployed at ${ctxDeployment.address} for ${ctxDeployment.receipt?.gasUsed}`
+                `ATG deployed at ${ATGDeployment.address} for ${ATGDeployment.receipt?.gasUsed}`
             );
 
             const timelockDeployment = await deployments.deploy("Timelock", {
@@ -55,7 +55,7 @@ const governance: DeployFunction = async function (
                 "GovernorAlpha",
                 {
                     from: namedAccounts.deployer,
-                    args: [timelockAddress, ctxAddress],
+                    args: [timelockAddress, ATGAddress],
                 }
             );
 
@@ -63,7 +63,7 @@ const governance: DeployFunction = async function (
                 `Governor Alpha deployed at ${governorDeployment.address} for ${governorDeployment.receipt?.gasUsed}`
             );
         } else {
-            log("Ctx Token already deployed");
+            log("ATG Token already deployed");
         }
     }
 };

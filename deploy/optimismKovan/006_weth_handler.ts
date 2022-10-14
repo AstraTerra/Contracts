@@ -18,7 +18,7 @@ const WETHVaultHandler = async (hre: HardhatRuntimeEnvironment) => {
 		} catch (error) {
 			log(error.message);
 			try {
-				let tcap = await deployments.get("TCAP");
+				let HMKT = await deployments.get("HMKT");
 
 				let WETHContract = await deployments.get("WETH");
 
@@ -26,7 +26,7 @@ const WETHVaultHandler = async (hre: HardhatRuntimeEnvironment) => {
 				let ratio = process.env.RATIO as string;
 				let burnFee = process.env.BURN_FEE as string;
 				let liquidationPenalty = process.env.LIQUIDATION_PENALTY as string;
-				let tcapOracle = await deployments.get("TCAPOracle");
+				let HMKTOracle = await deployments.get("HMKTOracle");
 				let priceFeedETH = await deployments.get("WETHOracle");
 				const timelock = "0x71cEA4383F7FadDD1F17c960DE7b6A32bFDAf139"; // Testing address for now
 				let rewardAddress = ethers.constants.AddressZero;
@@ -40,8 +40,8 @@ const WETHVaultHandler = async (hre: HardhatRuntimeEnvironment) => {
 						ratio,
 						burnFee,
 						liquidationPenalty,
-						tcapOracle.address,
-						tcap.address,
+						HMKTOracle.address,
+						HMKT.address,
 						WETHContract.address,
 						priceFeedETH.address,
 						priceFeedETH.address,

@@ -5,9 +5,9 @@ import "../IOrchestrator.sol";
 import "./iOVM_CrossDomainMessenger.sol";
 
 /**
- * @title TCAP Optimistic Orchestrator
- * @author Cryptex.finance
- * @notice Orchestrator contract in charge of managing the settings of the vaults, rewards and TCAP token. It acts as the owner of these contracts.
+ * @title HMKT Optimistic Orchestrator
+ * @author AstraTerra.finance
+ * @notice Orchestrator contract in charge of managing the settings of the vaults, rewards and HMKT token. It acts as the owner of these contracts.
  */
 contract OptimisticOrchestrator is IOrchestrator {
   /// @notice Address of the optimistic ovmL2CrossDomainMessenger contract.

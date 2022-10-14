@@ -6,17 +6,17 @@ pragma experimental ABIEncoderV2;
 
 contract GovernorBeta {
   /// @notice The name of this contract
-  string public constant name = "Cryptex Governor Beta";
+  string public constant name = "AstraTerra Governor Beta";
 
   /// @notice The number of votes in support of a proposal required in order for a quorum to be reached and for a vote to succeed
   function quorumVotes() public pure returns (uint256) {
     return 400_000e18;
-  } // 4% of Ctx
+  } // 4% of ATG
 
   /// @notice The number of votes required in order for a voter to become a proposer
   function proposalThreshold() public pure returns (uint256) {
     return 100_000e18;
-  } // 1% of Ctx
+  } // 1% of ATG
 
   /// @notice The maximum number of actions that can be included in a proposal
   function proposalMaxOperations() public pure returns (uint256) {
@@ -33,11 +33,11 @@ contract GovernorBeta {
     return 17_280;
   } // ~3 days in blocks (assuming 15s blocks)
 
-  /// @notice The address of the Ctx Protocol Timelock
+  /// @notice The address of the ATG Protocol Timelock
   TimelockInterface public timelock;
 
-  /// @notice The address of the Ctx governance token
-  CtxInterface public ctx;
+  /// @notice The address of the ATG governance token
+  ATGInterface public ATG;
 
   /// @notice The total number of proposals
   uint256 public proposalCount;
@@ -147,11 +147,11 @@ contract GovernorBeta {
 
   constructor(
     address timelock_,
-    address ctx_,
+    address ATG_,
     address guardian_
   ) {
     timelock = TimelockInterface(timelock_);
-    ctx = CtxInterface(ctx_);
+    ATG = ATGInterface(ATG_);
     guardian = guardian_;
   }
 
@@ -163,7 +163,7 @@ contract GovernorBeta {
     string memory description
   ) public returns (uint256) {
     require(
-      ctx.getPriorVotes(msg.sender, sub256(block.number, 1)) >
+      ATG.getPriorVotes(msg.sender, sub256(block.number, 1)) >
         proposalThreshold(),
       "GovernorBeta::propose: proposer votes below proposal threshold"
     );
@@ -294,7 +294,7 @@ contract GovernorBeta {
 
     Proposal storage proposal = proposals[proposalId];
     require(
-      ctx.getPriorVotes(proposal.proposer, sub256(block.number, 1)) <
+      ATG.getPriorVotes(proposal.proposer, sub256(block.number, 1)) <
         proposalThreshold(),
       "GovernorBeta::cancel: proposer above threshold"
     );
@@ -417,7 +417,7 @@ contract GovernorBeta {
       receipt.hasVoted == false,
       "GovernorBeta::_castVote: voter already voted"
     );
-    uint96 votes = ctx.getPriorVotes(voter, proposal.startBlock);
+    uint96 votes = ATG.getPriorVotes(voter, proposal.startBlock);
 
     if (support) {
       proposal.forVotes = add256(proposal.forVotes, votes);
@@ -494,7 +494,7 @@ interface TimelockInterface {
   ) external payable returns (bytes memory);
 }
 
-interface CtxInterface {
+interface ATGInterface {
   function getPriorVotes(address account, uint256 blockNumber)
     external
     view

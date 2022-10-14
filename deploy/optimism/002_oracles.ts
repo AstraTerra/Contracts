@@ -13,8 +13,8 @@ const Oracles: DeployFunction = async function (hre: HardhatRuntimeEnvironment) 
 			const namedAccounts = await hre.getNamedAccounts();
 
 			// Check contracts here https://docs.chain.link/docs/optimism-price-feeds/
-			const tcapOracle = await deployments.getOrNull("TCAPOracle");
-			const tcapAggregator = "0x15772F61e4cDC81c7C1c6c454724CE9c7065A6fF";
+			const HMKTOracle = await deployments.getOrNull("HMKTOracle");
+			const HMKTAggregator = "0x15772F61e4cDC81c7C1c6c454724CE9c7065A6fF";
 			const daiOracle = await deployments.getOrNull("DAIOracle");
 			const daiAggregator = "0x8dBa75e83DA73cc766A7e5a0ee71F656BAb470d6";
 			// const aaveOracle = await deployments.getOrNull("AAVEOracle");
@@ -30,17 +30,17 @@ const Oracles: DeployFunction = async function (hre: HardhatRuntimeEnvironment) 
 			// const crvOracle = await deployments.getOrNull("CRVOracle");
 			// const crvAggregator = "0xbD92C6c284271c227a1e0bF1786F468b539f51D9";
 
-			if (!tcapOracle) {
-				const deployResult = await deployments.deploy("TCAPOracle", {
+			if (!HMKTOracle) {
+				const deployResult = await deployments.deploy("HMKTOracle", {
 					contract: "ChainlinkOracle",
 					from: namedAccounts.deployer,
 					skipIfAlreadyDeployed: true,
 					log: true,
-					args: [tcapAggregator, owner],
+					args: [HMKTAggregator, owner],
 				});
-				log(`TCAPOracle deployed at ${deployResult.address} for ${deployResult.receipt?.gasUsed}`);
+				log(`HMKTOracle deployed at ${deployResult.address} for ${deployResult.receipt?.gasUsed}`);
 			} else {
-				log("TCAPOracle already deployed");
+				log("HMKTOracle already deployed");
 			}
 
 			if (!daiOracle) {

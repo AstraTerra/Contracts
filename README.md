@@ -1,12 +1,11 @@
-# Total Cryptocurrency Market Capitalization Token
+# Total Housing Market Capitalization Token
 
-## What is TCAP?
+## What is AstraTerra HMKT?
 
-TCAP is the World's First Total Cryptocurrency Market Capitalization Token created by Cryptex Finance. Like a conventional index fund, TCAP gives holders a real-time price exposure to the total cryptocurrency market cap. It's a 150% fully collateralized asset that’s both audited and accurately representative of the entire cryptocurrency complex by total market capitalization.
+HMKT is the World's First Total Housing Market Capitalization Token created by AstraTerra . Like a conventional index fund, HMKT gives holders a real-time price exposure to the total cryptocurrency market cap. It's a 150% fully collateralized asset that’s both audited and accurately representative of the entire cryptocurrency complex by total market capitalization.
 
-TCAPs are then minted upon being collateralized by an underlying asset, such as ETH, WBTC or DAI. The TCAP smart contracts are powered by Chainlink decentralized oracles that blend real time total market cap crypto data from seven of the most reputable crypto data providers in the world, subsequently bringing said data on chain to our TCAP smart contract.
+HMKTs are then minted upon being collateralized by an underlying asset, such as ETH, WBTC or DAI. The HMKT smart contracts are powered by Chainlink decentralized oracles that blend real time total market cap market data.
 
-For complete documentation please go to [docs.cryptex.finance](https://docs.cryptex.finance).
 
 ## Initial setup
 

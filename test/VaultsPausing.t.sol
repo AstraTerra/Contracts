@@ -5,7 +5,7 @@ import "forge-std/Test.sol";
 import "../contracts/ETHVaultHandler.sol";
 import "../contracts/Orchestrator.sol";
 import "../contracts/oracles/ChainlinkOracle.sol";
-import "../contracts/mocks/AggregatorInterfaceTCAP.sol";
+import "../contracts/mocks/AggregatorInterfaceHMKT.sol";
 import "../contracts/mocks/AggregatorInterface.sol";
 import "../contracts/mocks/WETH.sol";
 
@@ -20,12 +20,12 @@ contract VaultDisablingTest is Test {
   // Setup
   ETHVaultHandler ethVault;
   Orchestrator orchestrator = new Orchestrator(address(this));
-  TCAP tcap =
-    new TCAP("Total Crypto Market Cap Token", "TCAP", 0, (orchestrator));
-  AggregatorInterfaceTCAP tcapAggregator = new AggregatorInterfaceTCAP();
+  HMKT HMKT =
+    new HMKT("Total Crypto Market Cap Token", "HMKT", 0, (orchestrator));
+  AggregatorInterfaceHMKT HMKTAggregator = new AggregatorInterfaceHMKT();
   AggregatorInterface ethAggregator = new AggregatorInterface();
-  ChainlinkOracle tcapOracle =
-    new ChainlinkOracle(address(tcapAggregator), address(this));
+  ChainlinkOracle HMKTOracle =
+    new ChainlinkOracle(address(HMKTAggregator), address(this));
   ChainlinkOracle ethOracle =
     new ChainlinkOracle(address(ethAggregator), address(this));
   WETH weth = new WETH();
@@ -46,8 +46,8 @@ contract VaultDisablingTest is Test {
       ratio,
       burnFee,
       liquidationPenalty,
-      address(tcapOracle),
-      tcap,
+      address(HMKTOracle),
+      HMKT,
       address(weth),
       address(ethOracle),
       address(ethOracle),
@@ -55,7 +55,7 @@ contract VaultDisablingTest is Test {
       1 ether
     );
 
-    orchestrator.addTCAPVault(tcap, ethVault);
+    orchestrator.addHMKTVault(HMKT, ethVault);
   }
 
   function testToggleFunction_ShouldRevert_WhenNotOwner() public {
@@ -495,7 +495,7 @@ contract VaultDisablingTest is Test {
     ethVault.createVault();
     ethVault.addCollateralETH{value: amount}();
     ethVault.mint(9 ether);
-    tcap.transfer(user2, 9 ether);
+    HMKT.transfer(user2, 9 ether);
     uint256 fee = ethVault.getFee(amount);
     vm.stopPrank();
     vm.expectRevert("VaultHandler:: function disabled");
@@ -506,7 +506,7 @@ contract VaultDisablingTest is Test {
       IVaultHandler.FunctionChoices.LiquidateVault,
       false
     );
-    tcapAggregator.setLatestAnswer(50129732288636297500);
+    HMKTAggregator.setLatestAnswer(50129732288636297500);
     fee = ethVault.getFee(9 ether);
 
     //execution

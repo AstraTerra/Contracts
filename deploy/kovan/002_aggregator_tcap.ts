@@ -3,20 +3,20 @@ import { DeployFunction } from "hardhat-deploy/types";
 import { deployments, hardhatArguments } from "hardhat";
 import "hardhat-deploy/dist/src/type-extensions";
 
-const AggregatorInterfaceTCAP: DeployFunction = async function (
+const AggregatorInterfaceHMKT: DeployFunction = async function (
     hre: HardhatRuntimeEnvironment
 ) {
     if (hardhatArguments.network === "kovan") {
         const { log } = deployments;
 
         const namedAccounts = await hre.getNamedAccounts();
-        const tcapAggregator = await deployments.getOrNull(
-            "AggregatorInterfaceTCAP"
+        const HMKTAggregator = await deployments.getOrNull(
+            "AggregatorInterfaceHMKT"
         );
 
-        if (!tcapAggregator) {
+        if (!HMKTAggregator) {
             const deployResult = await deployments.deploy(
-                "AggregatorInterfaceTCAP",
+                "AggregatorInterfaceHMKT",
                 {
                     from: namedAccounts.deployer,
                     skipIfAlreadyDeployed: true,
@@ -24,10 +24,10 @@ const AggregatorInterfaceTCAP: DeployFunction = async function (
                 }
             );
             log(
-                `AggregatorInterfaceTCAP deployed at ${deployResult.address} for ${deployResult.receipt?.gasUsed}`
+                `AggregatorInterfaceHMKT deployed at ${deployResult.address} for ${deployResult.receipt?.gasUsed}`
             );
         }
     }
 };
 
-export default AggregatorInterfaceTCAP;
+export default AggregatorInterfaceHMKT;

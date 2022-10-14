@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.7.5;
 
-contract AggregatorInterfaceTCAP {
+contract AggregatorInterfaceHMKT {
   int256 value = 37129732288636297500;
 
   function latestAnswer() public view virtual returns (int256) {
@@ -21,16 +21,16 @@ contract AggregatorInterfaceTCAP {
     )
   {
     return (
-		36893488147419105170,
+      36893488147419105170,
       value,
-		1636560798,
-		1636560798,
-		36893488147419105170
+      1636560798,
+      1636560798,
+      36893488147419105170
     );
   }
 
-  function setLatestAnswer(int256 _tcap) public {
-    value = _tcap;
+  function setLatestAnswer(int256 _HMKT) public {
+    value = _HMKT;
   }
 
   event AnswerUpdated(

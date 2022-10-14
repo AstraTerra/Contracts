@@ -9,10 +9,10 @@ async function main() {
 	const amount = ethers.utils.parseEther("500000");
 	const wintermute = "0x4f3a120e72c76c22ae802d129f599bfdbc31cb81";
 	const gsr = "0xADeE949D4Bc54baDF9bc7F2F8cD236383D82B413";
-	let ctx = await deployments.get("Ctx");
-	let ctxContract = await ethers.getContractAt("Ctx", ctx.address);
+	let ATG = await deployments.get("ATG");
+	let ATGContract = await ethers.getContractAt("ATG", ATG.address);
 	const abi = new ethers.utils.AbiCoder();
-	const targets = [ctx.address, ctx.address];
+	const targets = [ATG.address, ATG.address];
 	const values = [0, 0];
 	const signatures = ["transfer(address,uint256)", "transfer(address,uint256)"];
 	const calldatas = [
@@ -26,10 +26,10 @@ async function main() {
 	console.log(calldatas);
 	console.log(description);
 
-	let balance = await ctxContract.balanceOf(wintermute);
-	console.log("Wintermute old CTX balance", ethers.utils.formatEther(balance));
-	balance = await ctxContract.balanceOf(gsr);
-	console.log("GSR old CTX balance", ethers.utils.formatEther(balance));
+	let balance = await ATGContract.balanceOf(wintermute);
+	console.log("Wintermute old ATG balance", ethers.utils.formatEther(balance));
+	balance = await ATGContract.balanceOf(gsr);
+	console.log("GSR old ATG balance", ethers.utils.formatEther(balance));
 
 	if (hardhatArguments.network === "hardhat") {
 		//Fund Multisign with ETH
@@ -49,10 +49,10 @@ async function main() {
 
 		// Validate Results
 		console.log("==================Check Balance==================");
-		balance = await ctxContract.balanceOf(wintermute);
-		console.log("Wintermute new CTX balance", ethers.utils.formatEther(balance));
-		balance = await ctxContract.balanceOf(gsr);
-		console.log("GSR new CTX balance", ethers.utils.formatEther(balance));
+		balance = await ATGContract.balanceOf(wintermute);
+		console.log("Wintermute new ATG balance", ethers.utils.formatEther(balance));
+		balance = await ATGContract.balanceOf(gsr);
+		console.log("GSR new ATG balance", ethers.utils.formatEther(balance));
 	}
 }
 

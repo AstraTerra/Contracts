@@ -13,12 +13,12 @@ const DAIVaultHandler = async (hre: HardhatRuntimeEnvironment) => {
 
 		let handlerContract;
 		let orchestrator = await deployments.get("Orchestrator");
-		let ctx = await deployments.get("Ctx");
+		let ATG = await deployments.get("ATG");
 		try {
 			handlerContract = await deployments.get("DAIVaultHandler");
 		} catch (error) {
 			try {
-				let tcap = await deployments.get("TCAP");
+				let HMKT = await deployments.get("HMKT");
 
 				let DAIContract = await deployments.get("DAI");
 
@@ -27,7 +27,7 @@ const DAIVaultHandler = async (hre: HardhatRuntimeEnvironment) => {
 				let burnFee = process.env.BURN_FEE as string;
 				let liquidationPenalty = process.env.LIQUIDATION_PENALTY as string;
 
-				let tcapOracle = await deployments.get("TCAPOracle");
+				let HMKTOracle = await deployments.get("HMKTOracle");
 				let priceFeedETH = await deployments.get("WETHOracle");
 				let priceFeedDAI = await deployments.get("DAIOracle");
 				let nonce = await owner.getTransactionCount();
@@ -51,8 +51,8 @@ const DAIVaultHandler = async (hre: HardhatRuntimeEnvironment) => {
 						ratio,
 						burnFee,
 						liquidationPenalty,
-						tcapOracle.address,
-						tcap.address,
+						HMKTOracle.address,
+						HMKT.address,
 						DAIContract.address,
 						priceFeedDAI.address,
 						priceFeedETH.address,
@@ -69,7 +69,7 @@ const DAIVaultHandler = async (hre: HardhatRuntimeEnvironment) => {
 				const rewardDeployment = await deployments.deploy("DAIRewardHandler", {
 					contract: "RewardHandler",
 					from: deployer,
-					args: [orchestrator.address, ctx.address, vaultAddress],
+					args: [orchestrator.address, ATG.address, vaultAddress],
 				});
 				log(
 					`Reward Handler deployed at ${rewardDeployment.address} for ${rewardDeployment.receipt?.gasUsed}`

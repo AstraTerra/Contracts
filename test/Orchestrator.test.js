@@ -3,8 +3,8 @@ var ethersProvider = require("ethers");
 
 describe("Orchestrator Contract", async function () {
 	let orchestratorInstance,
-		tcapInstance,
-		tcapInstance2,
+		HMKTInstance,
+		HMKTInstance2,
 		ethVaultInstance,
 		btcVaultInstance,
 		wethTokenInstance;
@@ -14,7 +14,7 @@ describe("Orchestrator Contract", async function () {
 	let ratio = "150";
 	let burnFee = "1";
 	let liquidationPenalty = "10";
-	let tcapOracle = (collateralAddress = collateralOracle = ethOracle =
+	let HMKTOracle = (collateralAddress = collateralOracle = ethOracle =
 		ethersProvider.constants.AddressZero);
 
 	before("Set Accounts", async () => {
@@ -39,29 +39,29 @@ describe("Orchestrator Contract", async function () {
 		await orchestratorInstance.deployed();
 		expect(orchestratorInstance.address).properAddress;
 
-		//TCAP
-		const TCAP = await ethers.getContractFactory("TCAP");
-		tcapInstance = await TCAP.deploy(
+		//HMKT
+		const HMKT = await ethers.getContractFactory("HMKT");
+		HMKTInstance = await HMKT.deploy(
 			"Total Market Cap Token",
-			"TCAP",
+			"HMKT",
 			18,
 			orchestratorInstance.address
 		);
-		await tcapInstance.deployed();
-		tcapInstance2 = await TCAP.deploy(
+		await HMKTInstance.deployed();
+		HMKTInstance2 = await HMKT.deploy(
 			"Total Market Cap Token",
-			"TCAP2",
+			"HMKT2",
 			18,
 			orchestratorInstance.address
 		);
-		await tcapInstance2.deployed();
+		await HMKTInstance2.deployed();
 		//Chainlink Oracles
 		const aggregator = await ethers.getContractFactory("AggregatorInterface");
 		let aggregatorInstance = await aggregator.deploy();
 		const oracle = await ethers.getContractFactory("ChainlinkOracle");
 		let chainlinkInstance = await oracle.deploy(aggregatorInstance.address, accounts[0]);
 		await chainlinkInstance.deployed();
-		tcapOracle = chainlinkInstance.address;
+		HMKTOracle = chainlinkInstance.address;
 		chainlinkInstance = await oracle.deploy(aggregatorInstance.address, accounts[0]);
 		await chainlinkInstance.deployed();
 		collateralOracle = chainlinkInstance.address;
@@ -86,8 +86,8 @@ describe("Orchestrator Contract", async function () {
 			ratio,
 			burnFee,
 			liquidationPenalty,
-			tcapOracle,
-			tcapInstance.address,
+			HMKTOracle,
+			HMKTInstance.address,
 			collateralAddress,
 			collateralOracle,
 			ethOracle,
@@ -103,8 +103,8 @@ describe("Orchestrator Contract", async function () {
 			ratio,
 			burnFee,
 			liquidationPenalty,
-			tcapOracle,
-			tcapInstance.address,
+			HMKTOracle,
+			HMKTInstance.address,
 			collateralAddress,
 			collateralOracle,
 			ethOracle,
@@ -285,105 +285,105 @@ describe("Orchestrator Contract", async function () {
 		await orchestratorInstance.retrieveETH(accounts[0]);
 	});
 
-	it("...should enable the TCAP cap", async () => {
+	it("...should enable the HMKT cap", async () => {
 		let enableCap = true;
 
 		await expect(
-			orchestratorInstance.connect(addr1).enableTCAPCap(tcapInstance.address, false)
+			orchestratorInstance.connect(addr1).enableHMKTCap(HMKTInstance.address, false)
 		).to.be.revertedWith("Ownable: caller is not the owner");
 
 		await expect(
-			orchestratorInstance.enableTCAPCap(ethersProvider.constants.AddressZero, false)
-		).to.be.revertedWith("Orchestrator::validTCAP: not a valid TCAP ERC20");
+			orchestratorInstance.enableHMKTCap(ethersProvider.constants.AddressZero, false)
+		).to.be.revertedWith("Orchestrator::validHMKT: not a valid HMKT ERC20");
 
-		await expect(orchestratorInstance.enableTCAPCap(tcapInstance.address, enableCap))
-			.to.emit(tcapInstance, "NewCapEnabled")
+		await expect(orchestratorInstance.enableHMKTCap(HMKTInstance.address, enableCap))
+			.to.emit(HMKTInstance, "NewCapEnabled")
 			.withArgs(orchestratorInstance.address, enableCap);
 
-		expect(enableCap).to.eq(await tcapInstance.capEnabled());
+		expect(enableCap).to.eq(await HMKTInstance.capEnabled());
 	});
 
-	it("...should set the TCAP cap", async () => {
-		let tcapCap = 100;
+	it("...should set the HMKT cap", async () => {
+		let HMKTCap = 100;
 
 		await expect(
-			orchestratorInstance.connect(addr1).setTCAPCap(tcapInstance.address, 0)
+			orchestratorInstance.connect(addr1).setHMKTCap(HMKTInstance.address, 0)
 		).to.be.revertedWith("Ownable: caller is not the owner");
 
 		await expect(
-			orchestratorInstance.setTCAPCap(ethersProvider.constants.AddressZero, 0)
-		).to.be.revertedWith("Orchestrator::validTCAP: not a valid TCAP ERC20");
+			orchestratorInstance.setHMKTCap(ethersProvider.constants.AddressZero, 0)
+		).to.be.revertedWith("Orchestrator::validHMKT: not a valid HMKT ERC20");
 
-		await expect(orchestratorInstance.setTCAPCap(tcapInstance.address, tcapCap))
-			.to.emit(tcapInstance, "NewCap")
-			.withArgs(orchestratorInstance.address, tcapCap);
+		await expect(orchestratorInstance.setHMKTCap(HMKTInstance.address, HMKTCap))
+			.to.emit(HMKTInstance, "NewCap")
+			.withArgs(orchestratorInstance.address, HMKTCap);
 
-		expect(tcapCap).to.eq(await tcapInstance.cap());
+		expect(HMKTCap).to.eq(await HMKTInstance.cap());
 	});
 
-	it("...should add vault to TCAP token", async () => {
+	it("...should add vault to HMKT token", async () => {
 		await expect(
 			orchestratorInstance
 				.connect(addr1)
-				.addTCAPVault(tcapInstance.address, ethVaultInstance.address)
+				.addHMKTVault(HMKTInstance.address, ethVaultInstance.address)
 		).to.be.revertedWith("Ownable: caller is not the owner");
 
 		await expect(
-			orchestratorInstance.addTCAPVault(
+			orchestratorInstance.addHMKTVault(
 				ethersProvider.constants.AddressZero,
 				ethVaultInstance.address
 			)
-		).to.be.revertedWith("Orchestrator::validTCAP: not a valid TCAP ERC20");
+		).to.be.revertedWith("Orchestrator::validHMKT: not a valid HMKT ERC20");
 
 		await expect(
-			orchestratorInstance.addTCAPVault(tcapInstance.address, ethersProvider.constants.AddressZero)
+			orchestratorInstance.addHMKTVault(HMKTInstance.address, ethersProvider.constants.AddressZero)
 		).to.be.revertedWith("Orchestrator::validVault: not a valid vault");
 
-		await expect(orchestratorInstance.addTCAPVault(tcapInstance.address, ethVaultInstance.address))
-			.to.emit(tcapInstance, "VaultHandlerAdded")
+		await expect(orchestratorInstance.addHMKTVault(HMKTInstance.address, ethVaultInstance.address))
+			.to.emit(HMKTInstance, "VaultHandlerAdded")
 			.withArgs(orchestratorInstance.address, ethVaultInstance.address);
 
-		expect(await tcapInstance.vaultHandlers(ethVaultInstance.address)).to.eq(true);
+		expect(await HMKTInstance.vaultHandlers(ethVaultInstance.address)).to.eq(true);
 	});
 
-	it("...should remove vault to TCAP token", async () => {
+	it("...should remove vault to HMKT token", async () => {
 		await expect(
 			orchestratorInstance
 				.connect(addr1)
-				.removeTCAPVault(tcapInstance.address, ethVaultInstance.address)
+				.removeHMKTVault(HMKTInstance.address, ethVaultInstance.address)
 		).to.be.revertedWith("Ownable: caller is not the owner");
 
 		await expect(
-			orchestratorInstance.removeTCAPVault(
+			orchestratorInstance.removeHMKTVault(
 				ethersProvider.constants.AddressZero,
 				ethVaultInstance.address
 			)
-		).to.be.revertedWith("Orchestrator::validTCAP: not a valid TCAP ERC20");
+		).to.be.revertedWith("Orchestrator::validHMKT: not a valid HMKT ERC20");
 
 		await expect(
-			orchestratorInstance.removeTCAPVault(
-				tcapInstance.address,
+			orchestratorInstance.removeHMKTVault(
+				HMKTInstance.address,
 				ethersProvider.constants.AddressZero
 			)
 		).to.be.revertedWith("Orchestrator::validVault: not a valid vault");
 
 		await expect(
-			orchestratorInstance.removeTCAPVault(tcapInstance.address, ethVaultInstance.address)
+			orchestratorInstance.removeHMKTVault(HMKTInstance.address, ethVaultInstance.address)
 		)
-			.to.emit(tcapInstance, "VaultHandlerRemoved")
+			.to.emit(HMKTInstance, "VaultHandlerRemoved")
 			.withArgs(orchestratorInstance.address, ethVaultInstance.address);
 
-		expect(await tcapInstance.vaultHandlers(ethVaultInstance.address)).to.eq(false);
+		expect(await HMKTInstance.vaultHandlers(ethVaultInstance.address)).to.eq(false);
 	});
 
 	it("...should allow to execute a custom transaction", async () => {
-		await orchestratorInstance.addTCAPVault(tcapInstance.address, ethVaultInstance.address);
+		await orchestratorInstance.addHMKTVault(HMKTInstance.address, ethVaultInstance.address);
 
-		let currentOwner = await tcapInstance.owner();
+		let currentOwner = await HMKTInstance.owner();
 		expect(currentOwner).to.eq(orchestratorInstance.address);
 		const newOwner = await addr1.getAddress();
 		const abi = new ethers.utils.AbiCoder();
-		const target = tcapInstance.address;
+		const target = HMKTInstance.address;
 		const value = 0;
 		const signature = "transferOwnership(address)";
 		const data = abi.encode(["address"], [newOwner]);
@@ -401,7 +401,7 @@ describe("Orchestrator Contract", async function () {
 			.to.emit(orchestratorInstance, "TransactionExecuted")
 			.withArgs(target, value, signature, data);
 
-		currentOwner = await tcapInstance.owner();
+		currentOwner = await HMKTInstance.owner();
 		expect(currentOwner).to.eq(newOwner);
 	});
 });

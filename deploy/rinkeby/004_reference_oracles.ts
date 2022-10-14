@@ -5,23 +5,23 @@ module.exports = async ({ getNamedAccounts, deployments }: any) => {
 		const { deployIfDifferent, log } = deployments;
 		const { deployer } = await getNamedAccounts();
 
-		let TCAPOracle, BTCOracle, WETHOracle, DAIOracle, USDCOracle;
-		let oracleAddress = process.env.TCAP_ORACLE as string;
+		let HMKTOracle, BTCOracle, WETHOracle, DAIOracle, USDCOracle;
+		let oracleAddress = process.env.HMKT_ORACLE as string;
 		try {
-			TCAPOracle = await deployments.get("TCAPOracle");
+			HMKTOracle = await deployments.get("HMKTOracle");
 		} catch (error) {
 			log(error.message);
 			const deployResult = await deployIfDifferent(
 				["data"],
-				"TCAPOracle",
+				"HMKTOracle",
 				{ from: deployer },
 				"ChainlinkOracle",
 				oracleAddress,
 				deployer
 			);
-			TCAPOracle = await deployments.get("TCAPOracle");
+			HMKTOracle = await deployments.get("HMKTOracle");
 			if (deployResult.newlyDeployed) {
-				log(`Oracle deployed at ${TCAPOracle.address} for ${deployResult.receipt.gasUsed}`);
+				log(`Oracle deployed at ${HMKTOracle.address} for ${deployResult.receipt.gasUsed}`);
 			}
 		}
 		try {

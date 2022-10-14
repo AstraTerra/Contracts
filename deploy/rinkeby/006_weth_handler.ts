@@ -14,13 +14,13 @@ const WETHVaultHandler = async (hre: HardhatRuntimeEnvironment) => {
 
 		let handlerContract;
 		let orchestrator = await deployments.get("Orchestrator");
-		let ctx = await deployments.get("Ctx");
+		let ATG = await deployments.get("ATG");
 		try {
 			handlerContract = await deployments.get("WETHVaultHandler");
 		} catch (error) {
 			log(error.message);
 			try {
-				let tcap = await deployments.get("TCAP");
+				let HMKT = await deployments.get("HMKT");
 
 				let WETHContract = await deployments.get("WETH");
 
@@ -29,7 +29,7 @@ const WETHVaultHandler = async (hre: HardhatRuntimeEnvironment) => {
 				let burnFee = process.env.BURN_FEE as string;
 				let liquidationPenalty = process.env.LIQUIDATION_PENALTY as string;
 
-				let tcapOracle = await deployments.get("TCAPOracle");
+				let HMKTOracle = await deployments.get("HMKTOracle");
 				let priceFeedETH = await deployments.get("WETHOracle");
 				let nonce = await owner.getTransactionCount();
 
@@ -52,8 +52,8 @@ const WETHVaultHandler = async (hre: HardhatRuntimeEnvironment) => {
 						ratio,
 						burnFee,
 						liquidationPenalty,
-						tcapOracle.address,
-						tcap.address,
+						HMKTOracle.address,
+						HMKT.address,
 						WETHContract.address,
 						priceFeedETH.address,
 						priceFeedETH.address,
@@ -70,7 +70,7 @@ const WETHVaultHandler = async (hre: HardhatRuntimeEnvironment) => {
 				const rewardDeployment = await deployments.deploy("WETHRewardHandler", {
 					contract: "RewardHandler",
 					from: deployer,
-					args: [orchestrator.address, ctx.address, vaultAddress],
+					args: [orchestrator.address, ATG.address, vaultAddress],
 				});
 				log(
 					`Reward Handler deployed at ${rewardDeployment.address} for ${rewardDeployment.receipt?.gasUsed}`

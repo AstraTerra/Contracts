@@ -23,15 +23,15 @@ const treasury: DeployFunction = async function (
             const ethers = hre.ethers;
 
             const namedAccounts = await hre.getNamedAccounts();
-            let ctxDeployment = await deployments.get("Ctx");
+            let ATGDeployment = await deployments.get("ATG");
 
             const oneYear = 1649282061; // Wednesday, April 6, 2022 5:54:21 PM
-            const ctx = ctxDeployment.address;
+            const ATG = ATGDeployment.address;
             const vestingBegin = 1621294508; // 5/17/2021, 5:35:08 PM
             const vestingEnd = 1712440461; // 4/6/2024, 5:54:21 PM
             const vestingCliff = oneYear;
-            const vestingAmountTeam = "1500000000000000000000000"; // 1.5M CTX Wei
-            const vestingAmountAdvisor = "25000000000000000000000"; // 25k CTX Wei
+            const vestingAmountTeam = "1500000000000000000000000"; // 1.5M ATG Wei
+            const vestingAmountAdvisor = "25000000000000000000000"; // 25k ATG Wei
             const teamAddress = "0xa70b638b70154edfcbb8dbbbd04900f328f32c35";
             const advisorAddress1 =
                 "0xf4b0498e71485717f6f9b6117672c19a0dba5100"; // zak.eth
@@ -43,7 +43,7 @@ const treasury: DeployFunction = async function (
                     contract: "TreasuryVester",
                     from: namedAccounts.deployer,
                     args: [
-                        ctx,
+                        ATG,
                         teamAddress,
                         vestingAmountTeam,
                         vestingBegin,
@@ -66,7 +66,7 @@ const treasury: DeployFunction = async function (
                     contract: "TreasuryVester",
                     from: namedAccounts.deployer,
                     args: [
-                        ctx,
+                        ATG,
                         advisorAddress1,
                         vestingAmountAdvisor,
                         vestingBegin,
@@ -89,7 +89,7 @@ const treasury: DeployFunction = async function (
                     contract: "TreasuryVester",
                     from: namedAccounts.deployer,
                     args: [
-                        ctx,
+                        ATG,
                         advisorAddress2,
                         vestingAmountTeam,
                         vestingBegin,

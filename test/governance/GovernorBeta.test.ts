@@ -17,19 +17,19 @@ describe("GovernorBeta", () => {
 	const [wallet] = waffle.provider.getWallets();
 	const loadFixture = waffle.createFixtureLoader([wallet], waffle.provider);
 
-	let ctx: Contract;
+	let ATG: Contract;
 	let timelock: Contract;
 	let governorBeta: Contract;
 	beforeEach(async () => {
 		const fixture = await loadFixture(governanceFixture);
-		ctx = fixture.ctx;
+		ATG = fixture.ATG;
 		timelock = fixture.timelock;
 		governorBeta = fixture.governorBeta;
 	});
 
-	it("...should test ctx", async () => {
-		const balance = await ctx.balanceOf(wallet.address);
-		const totalSupply = await ctx.totalSupply();
+	it("...should test ATG", async () => {
+		const balance = await ATG.balanceOf(wallet.address);
+		const totalSupply = await ATG.totalSupply();
 		expect(balance).to.be.eq(totalSupply);
 	});
 
@@ -47,7 +47,7 @@ describe("GovernorBeta", () => {
 		expect(votingPeriod).to.be.eq(17280);
 		const timelockAddress = await governorBeta.timelock();
 		expect(timelockAddress).to.be.eq(timelock.address);
-		const ctxFromGovernor = await governorBeta.ctx();
-		expect(ctxFromGovernor).to.be.eq(ctx.address);
+		const ATGFromGovernor = await governorBeta.ATG();
+		expect(ATGFromGovernor).to.be.eq(ATG.address);
 	});
 });

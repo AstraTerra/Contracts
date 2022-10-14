@@ -86,7 +86,7 @@ const config: HardhatUserConfig = {
 		enabled: process.env.REPORT_GAS == "true",
 		currency: "USD",
 		gasPrice: 152,
-		coinmarketcap: process.env.COIN_API as string,
+		coinmarkeHMKT: process.env.COIN_API as string,
 	},
 	mocha: {
 		timeout: 100000,

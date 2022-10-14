@@ -7,7 +7,7 @@ module.exports = async ({ deployments }: any) => {
 		let hardUSDCHandler = await deployments.get("HardUSDCVaultHandler");
 		let hardETHHandler = await deployments.get("HardETHVaultHandler");
 		let OrchestratorDeployment = await deployments.get("Orchestrator");
-		let tcap = await deployments.get("TCAP");
+		let HMKT = await deployments.get("HMKT");
 
 		let orchestrator = await ethershardhat.getContractAt(
 			"Orchestrator",
@@ -15,9 +15,9 @@ module.exports = async ({ deployments }: any) => {
 		);
 
 		console.log("Adding vault Handlers");
-		await orchestrator.addTCAPVault(tcap.address,hardDAIHandler.address);
-		await orchestrator.addTCAPVault(tcap.address,hardUSDCHandler.address);
-		await orchestrator.addTCAPVault(tcap.address,hardETHHandler.address);
+		await orchestrator.addHMKTVault(HMKT.address,hardDAIHandler.address);
+		await orchestrator.addHMKTVault(HMKT.address,hardUSDCHandler.address);
+		await orchestrator.addHMKTVault(HMKT.address,hardETHHandler.address);
 	}
 };
 module.exports.tags = ["Initialize"];

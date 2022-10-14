@@ -4,8 +4,8 @@ pragma solidity 0.7.5;
 import "./Proprietor.sol";
 
 /**
- * @title TCAP Treasury
- * @author Cryptex.finance
+ * @title HMKT Treasury
+ * @author AstraTerra.finance
  * @notice This contract will hold the assets generated on L2 networks.
  */
 contract ITreasury is Proprietor {

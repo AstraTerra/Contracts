@@ -9,7 +9,7 @@ const Vaults: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
 		const namedAccounts = await hre.getNamedAccounts();
 		const optimisticOrchestrator = await deployments.getOrNull("OptimisticOrchestrator");
-		const tcap = await deployments.getOrNull("TCAP");
+		const HMKT = await deployments.getOrNull("HMKT");
 		const optimisticTreasury = await deployments.getOrNull("OptimisticTreasury");
 
 		// Vaults
@@ -23,7 +23,7 @@ const Vaults: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
 		// Oracles
 		// Check contracts here https://docs.chain.link/docs/optimism-price-feeds/
-		const tcapOracle = await deployments.getOrNull("TCAPOracle");
+		const HMKTOracle = await deployments.getOrNull("HMKTOracle");
 		const daiOracle = await deployments.getOrNull("DAIOracle");
 		// const aaveOracle = await deployments.getOrNull("AAVEOracle");
 		const ethOracle = await deployments.getOrNull("ETHOracle");
@@ -32,15 +32,15 @@ const Vaults: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 		const snxOracle = await deployments.getOrNull("SNXOracle");
 		// const crvOracle = await deployments.getOrNull("CRVOracle");
 
-		if (optimisticOrchestrator && tcap && tcapOracle && ethOracle && optimisticTreasury) {
+		if (optimisticOrchestrator && HMKT && HMKTOracle && ethOracle && optimisticTreasury) {
 			//Vault variables
 			const orchestratorAddress = optimisticOrchestrator.address;
 			const divisor = "10000000000";
 			const ratio = "200";
 			const burnFee = "1";
 			const liquidationPenalty = "10";
-			const assetOracle = tcapOracle.address;
-			const tcapAddress = tcap.address;
+			const assetOracle = HMKTOracle.address;
+			const HMKTAddress = HMKT.address;
 			const feeOracle = ethOracle.address;
 			const rewardHandler = hre.ethers.constants.AddressZero;
 			const treasury = optimisticTreasury.address;
@@ -61,7 +61,7 @@ const Vaults: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 						burnFee,
 						liquidationPenalty,
 						assetOracle,
-						tcapAddress,
+						HMKTAddress,
 						collateralAddress,
 						collateralOracle,
 						feeOracle,
@@ -91,7 +91,7 @@ const Vaults: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 						burnFee,
 						liquidationPenalty,
 						assetOracle,
-						tcapAddress,
+						HMKTAddress,
 						collateralAddress,
 						collateralOracle,
 						feeOracle,
@@ -122,7 +122,7 @@ const Vaults: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 			// 			burnFee,
 			// 			liquidationPenalty,
 			// 			assetOracle,
-			// 			tcapAddress,
+			// 			HMKTAddress,
 			// 			collateralAddress,
 			// 			collateralOracle,
 			// 			feeOracle,
@@ -152,7 +152,7 @@ const Vaults: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 						burnFee,
 						liquidationPenalty,
 						assetOracle,
-						tcapAddress,
+						HMKTAddress,
 						collateralAddress,
 						collateralOracle,
 						feeOracle,
@@ -182,7 +182,7 @@ const Vaults: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 						burnFee,
 						liquidationPenalty,
 						assetOracle,
-						tcapAddress,
+						HMKTAddress,
 						collateralAddress,
 						collateralOracle,
 						feeOracle,
@@ -212,7 +212,7 @@ const Vaults: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 						burnFee,
 						liquidationPenalty,
 						assetOracle,
-						tcapAddress,
+						HMKTAddress,
 						collateralAddress,
 						collateralOracle,
 						feeOracle,
@@ -243,7 +243,7 @@ const Vaults: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 			// 			burnFee,
 			// 			liquidationPenalty,
 			// 			assetOracle,
-			// 			tcapAddress,
+			// 			HMKTAddress,
 			// 			collateralAddress,
 			// 			collateralOracle,
 			// 			feeOracle,

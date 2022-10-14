@@ -14,8 +14,8 @@ const maticHandler: DeployFunction = async function (
             const orchestratorDeployment = await deployments.get(
                 "Orchestrator"
             );
-            const tcapDeployment = await deployments.get("TCAP");
-            const tcapOracleDeployment = await deployments.get("TCAPOracle");
+            const HMKTDeployment = await deployments.get("HMKT");
+            const HMKTOracleDeployment = await deployments.get("HMKTOracle");
             const maticOracleDeployment = await deployments.get("MATICOracle");
 
             // Params
@@ -24,8 +24,8 @@ const maticHandler: DeployFunction = async function (
             let ratio = "200";
             let burnFee = "1";
             let liquidationPenalty = "10";
-            let tcapOracle = tcapOracleDeployment.address;
-            let tcapAddress = tcapDeployment.address;
+            let HMKTOracle = HMKTOracleDeployment.address;
+            let HMKTAddress = HMKTDeployment.address;
             let collateralAddress =
                 "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270";
             let maticOracle = maticOracleDeployment.address;
@@ -43,8 +43,8 @@ const maticHandler: DeployFunction = async function (
                         ratio,
                         burnFee,
                         liquidationPenalty,
-                        tcapOracle,
-                        tcapAddress,
+                        HMKTOracle,
+                        HMKTAddress,
                         collateralAddress,
                         maticOracle,
                         maticOracle,

@@ -3,10 +3,10 @@ var expect = require("chai").expect;
 describe("ETH Vault", async function () {
 	let ethTokenHandler,
 		wethTokenInstance,
-		tcapInstance,
-		tcapOracleInstance,
+		HMKTInstance,
+		HMKTOracleInstance,
 		priceOracleInstance,
-		aggregatorTCAPInstance,
+		aggregatorHMKTInstance,
 		orchestratorInstance;
 	let [owner, addr1, addr2, addr3, lq, guardian, treasury] = [];
 	let accounts = [];
@@ -44,23 +44,23 @@ describe("ETH Vault", async function () {
 		const timelock = await ethers.getContractFactory("Timelock");
 		const timelockInstance = await timelock.deploy(orchestratorInstance.address, threeDays);
 
-		const TCAP = await ethers.getContractFactory("TCAP");
-		tcapInstance = await TCAP.deploy(
+		const HMKT = await ethers.getContractFactory("HMKT");
+		HMKTInstance = await HMKT.deploy(
 			"Total Market Cap Token",
-			"TCAP",
+			"HMKT",
 			18,
 			orchestratorInstance.address
 		);
-		await tcapInstance.deployed();
+		await HMKTInstance.deployed();
 
 		const collateralOracle = await ethers.getContractFactory("ChainlinkOracle");
 		const oracle = await ethers.getContractFactory("ChainlinkOracle");
 		const aggregator = await ethers.getContractFactory("AggregatorInterface");
-		const aggregatorTcap = await ethers.getContractFactory("AggregatorInterfaceTCAP");
+		const aggregatorHMKT = await ethers.getContractFactory("AggregatorInterfaceHMKT");
 		let aggregatorInstance = await aggregator.deploy();
-		aggregatorTCAPInstance = await aggregatorTcap.deploy();
+		aggregatorHMKTInstance = await aggregatorHMKT.deploy();
 		priceOracleInstance = await collateralOracle.deploy(aggregatorInstance.address, accounts[0]);
-		tcapOracleInstance = await oracle.deploy(aggregatorTCAPInstance.address, accounts[0]);
+		HMKTOracleInstance = await oracle.deploy(aggregatorHMKTInstance.address, accounts[0]);
 		await priceOracleInstance.deployed();
 		const weth = await ethers.getContractFactory("WETH");
 		wethTokenInstance = await weth.deploy();
@@ -74,8 +74,8 @@ describe("ETH Vault", async function () {
 			ratio,
 			burnFee,
 			liquidationPenalty,
-			tcapOracleInstance.address,
-			tcapInstance.address,
+			HMKTOracleInstance.address,
+			HMKTInstance.address,
 			wethTokenInstance.address,
 			priceOracleInstance.address,
 			priceOracleInstance.address,
@@ -84,7 +84,7 @@ describe("ETH Vault", async function () {
 		);
 		await ethTokenHandler.deployed();
 		expect(ethTokenHandler.address).properAddress;
-		await orchestratorInstance.addTCAPVault(tcapInstance.address, ethTokenHandler.address);
+		await orchestratorInstance.addHMKTVault(HMKTInstance.address, ethTokenHandler.address);
 	});
 
 	it("...should allow the owner to set the treasury address", async () => {
@@ -109,10 +109,10 @@ describe("ETH Vault", async function () {
 	});
 
 	it("...should return the token price", async () => {
-		let tcapPrice = await ethTokenHandler.TCAPPrice();
-		let totalMarketCap = (await tcapOracleInstance.getLatestAnswer()).mul(10000000000);
-		let result = totalMarketCap.div(divisor);
-		expect(tcapPrice).to.eq(result);
+		let HMKTPrice = await ethTokenHandler.HMKTPrice();
+		let totalMarkeHMKT = (await HMKTOracleInstance.getLatestAnswer()).mul(10000000000);
+		let result = totalMarkeHMKT.div(divisor);
+		expect(HMKTPrice).to.eq(result);
 	});
 
 	it("...should allow users to create a vault", async () => {
@@ -310,9 +310,9 @@ describe("ETH Vault", async function () {
 		let amount = ethers.utils.parseEther("1");
 		const reqAmount = await ethTokenHandler.requiredCollateral(amount);
 		const ethPrice = (await priceOracleInstance.getLatestAnswer()).mul(10000000000);
-		const tcapPrice = await ethTokenHandler.TCAPPrice();
+		const HMKTPrice = await ethTokenHandler.HMKTPrice();
 		const ratio = await ethTokenHandler.ratio();
-		let result = tcapPrice.mul(amount).mul(ratio).div(100).div(ethPrice);
+		let result = HMKTPrice.mul(amount).mul(ratio).div(100).div(ethPrice);
 		expect(reqAmount).to.eq(result);
 	});
 
@@ -324,8 +324,8 @@ describe("ETH Vault", async function () {
 		const reqAmount2 = await ethTokenHandler.requiredCollateral(amount2);
 
 		await wethTokenInstance.connect(addr1).deposit({ value: reqAmount2 });
-		let tcapBalance = await tcapInstance.balanceOf(accounts[1]);
-		expect(tcapBalance).to.eq(0);
+		let HMKTBalance = await HMKTInstance.balanceOf(accounts[1]);
+		expect(HMKTBalance).to.eq(0);
 		await wethTokenInstance.connect(addr1).approve(ethTokenHandler.address, reqAmount2);
 		await ethTokenHandler.connect(addr1).addCollateral(reqAmount2);
 		await expect(ethTokenHandler.connect(addr3).mint(amount)).to.be.revertedWith(
@@ -337,8 +337,8 @@ describe("ETH Vault", async function () {
 		await expect(ethTokenHandler.connect(addr1).mint(amount))
 			.to.emit(ethTokenHandler, "TokensMinted")
 			.withArgs(accounts[1], 1, amount);
-		tcapBalance = await tcapInstance.balanceOf(accounts[1]);
-		expect(tcapBalance).to.eq(amount);
+		HMKTBalance = await HMKTInstance.balanceOf(accounts[1]);
+		expect(HMKTBalance).to.eq(amount);
 		vault = await ethTokenHandler.getVault(1);
 		expect(vault[0]).to.eq(1);
 		expect(vault[1]).to.eq(reqAmount2);
@@ -366,13 +366,13 @@ describe("ETH Vault", async function () {
 	it("...should calculate the burn fee", async () => {
 		let amount = ethers.utils.parseEther("10");
 		let divisor = 10000;
-		let tcapPrice = await ethTokenHandler.TCAPPrice();
+		let HMKTPrice = await ethTokenHandler.HMKTPrice();
 		let ethPrice = (await priceOracleInstance.getLatestAnswer()).mul(10000000000);
-		let result = tcapPrice.mul(amount).div(divisor).div(ethPrice);
+		let result = HMKTPrice.mul(amount).div(divisor).div(ethPrice);
 		let fee = await ethTokenHandler.getFee(amount);
 		expect(fee).to.eq(result);
 		amount = ethers.utils.parseEther("100");
-		result = tcapPrice.mul(amount).div(divisor).div(ethPrice);
+		result = HMKTPrice.mul(amount).div(divisor).div(ethPrice);
 		fee = await ethTokenHandler.getFee(amount);
 		expect(fee).to.eq(result);
 	});
@@ -399,8 +399,8 @@ describe("ETH Vault", async function () {
 		await expect(ethTokenHandler.connect(addr1).burn(amount, { value: ethAmount }))
 			.to.emit(ethTokenHandler, "TokensBurned")
 			.withArgs(accounts[1], 1, amount);
-		let tcapBalance = await tcapInstance.balanceOf(accounts[1]);
-		expect(tcapBalance).to.eq(0);
+		let HMKTBalance = await HMKTInstance.balanceOf(accounts[1]);
+		expect(HMKTBalance).to.eq(0);
 		vault = await ethTokenHandler.getVault(1);
 		expect(vault[0]).to.eq(1);
 		expect(vault[1]).to.eq(reqAmount2);
@@ -443,44 +443,44 @@ describe("ETH Vault", async function () {
 		await expect(ethTokenHandler.connect(addr3).liquidateVault(2, 0)).to.be.revertedWith(
 			"VaultHandler::liquidateVault: vault is not liquidable"
 		);
-		const totalMarketCap = "43129732288636297500";
-		await aggregatorTCAPInstance.connect(owner).setLatestAnswer(totalMarketCap);
+		const totalMarkeHMKT = "43129732288636297500";
+		await aggregatorHMKTInstance.connect(owner).setLatestAnswer(totalMarkeHMKT);
 	});
 
 	it("...should get the required collateral for liquidation", async () => {
-		let reqLiquidation = await ethTokenHandler.requiredLiquidationTCAP(2);
+		let reqLiquidation = await ethTokenHandler.requiredLiquidationHMKT(2);
 		let liquidationPenalty = await ethTokenHandler.liquidationPenalty();
 		let ratio = await ethTokenHandler.ratio();
 		let collateralPrice = (await priceOracleInstance.getLatestAnswer()).mul(10000000000);
-		let tcapPrice = await ethTokenHandler.TCAPPrice();
+		let HMKTPrice = await ethTokenHandler.HMKTPrice();
 		let vault = await ethTokenHandler.getVault(2);
-		let collateralTcap = vault[1].mul(collateralPrice).div(tcapPrice);
-		let reqDividend = vault[3].mul(ratio).div(100).sub(collateralTcap).mul(100);
+		let collateralHMKT = vault[1].mul(collateralPrice).div(HMKTPrice);
+		let reqDividend = vault[3].mul(ratio).div(100).sub(collateralHMKT).mul(100);
 		let reqDivisor = ratio.sub(liquidationPenalty.add(100));
 		let result = reqDividend.div(reqDivisor);
 		expect(result).to.eq(reqLiquidation);
 	});
 
 	it("...should get the liquidation reward", async () => {
-		let reqLiquidation = await ethTokenHandler.requiredLiquidationTCAP(2);
+		let reqLiquidation = await ethTokenHandler.requiredLiquidationHMKT(2);
 		let liquidationReward = await ethTokenHandler.liquidationReward(2);
 		let liquidationPenalty = await ethTokenHandler.liquidationPenalty();
 		let collateralPrice = (await priceOracleInstance.getLatestAnswer()).mul(10000000000);
-		let tcapPrice = await ethTokenHandler.TCAPPrice();
+		let HMKTPrice = await ethTokenHandler.HMKTPrice();
 
 		let result = reqLiquidation.mul(liquidationPenalty.add(100)).div(100);
-		result = result.mul(tcapPrice).div(collateralPrice);
+		result = result.mul(HMKTPrice).div(collateralPrice);
 		expect(result).to.eq(liquidationReward);
 	});
 
 	it("...should allow liquidators to return profits", async () => {
 		const divisor = ethers.utils.parseEther("1");
 		const liquidationReward = await ethTokenHandler.liquidationReward(2);
-		const reqLiquidation = await ethTokenHandler.requiredLiquidationTCAP(2);
-		const tcapPrice = await ethTokenHandler.TCAPPrice();
+		const reqLiquidation = await ethTokenHandler.requiredLiquidationHMKT(2);
+		const HMKTPrice = await ethTokenHandler.HMKTPrice();
 		const collateralPrice = (await priceOracleInstance.getLatestAnswer()).mul(10000000000);
 		const rewardUSD = liquidationReward.mul(collateralPrice).div(divisor);
-		const collateralUSD = reqLiquidation.mul(tcapPrice).div(divisor);
+		const collateralUSD = reqLiquidation.mul(HMKTPrice).div(divisor);
 		expect(rewardUSD).to.be.gte(
 			collateralUSD,
 			"reward should be greater than collateral paid to liquidate"
@@ -503,8 +503,8 @@ describe("ETH Vault", async function () {
 		await ethTokenHandler.connect(addr3).mint(liquidatorAmount);
 
 		let liquidationReward = await ethTokenHandler.liquidationReward(2);
-		let reqLiquidation = await ethTokenHandler.requiredLiquidationTCAP(2);
-		let tcapBalance = await tcapInstance.balanceOf(accounts[3]);
+		let reqLiquidation = await ethTokenHandler.requiredLiquidationHMKT(2);
+		let HMKTBalance = await HMKTInstance.balanceOf(accounts[3]);
 		let collateralBalance = await wethTokenInstance.balanceOf(accounts[3]);
 		let vault = await ethTokenHandler.getVault(2);
 		const burnAmount = await ethTokenHandler.getFee(reqLiquidation);
@@ -524,7 +524,7 @@ describe("ETH Vault", async function () {
 			.withArgs(2, accounts[3], reqLiquidation, liquidationReward);
 
 		vaultRatio = await ethTokenHandler.getVaultRatio(2);
-		let newTcapBalance = await tcapInstance.balanceOf(accounts[3]);
+		let newHMKTBalance = await HMKTInstance.balanceOf(accounts[3]);
 		let newCollateralBalance = await wethTokenInstance.balanceOf(accounts[3]);
 		let updatedVault = await ethTokenHandler.getVault(2);
 		let currentEthBalance = await ethers.provider.getBalance(ethTokenHandler.address);
@@ -532,7 +532,7 @@ describe("ETH Vault", async function () {
 		expect(updatedVault[1]).to.eq(vault[1].sub(liquidationReward));
 		expect(updatedVault[3]).to.eq(vault[3].sub(reqLiquidation));
 		expect(newCollateralBalance).to.eq(collateralBalance.add(liquidationReward));
-		expect(tcapBalance).to.eq(newTcapBalance.add(reqLiquidation)); //increase earnings
+		expect(HMKTBalance).to.eq(newHMKTBalance.add(reqLiquidation)); //increase earnings
 		expect(vaultRatio).to.be.gte(parseInt(ratio)); // set vault back to ratio
 		const afterTreasury = await ethers.provider.getBalance(treasuryAddress);
 		expect(afterTreasury.gt(beforeTreasury)).eq(true);

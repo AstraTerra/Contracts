@@ -3,14 +3,14 @@ import { Contract, Wallet, providers } from "ethers";
 import { waffle } from "hardhat";
 const { deployContract } = waffle;
 
-import Ctx from "../../artifacts/contracts/governance/Ctx.sol/Ctx.json";
+import ATG from "../../artifacts/contracts/governance/ATG.sol/ATG.json";
 import Timelock from "../../artifacts/contracts/governance/Timelock.sol/Timelock.json";
 import GovernorBeta from "../../artifacts/contracts/governance/GovernorBeta.sol/GovernorBeta.json";
 
 import { DELAY } from "./utils";
 
 interface GovernanceFixture {
-	ctx: Contract;
+	ATG: Contract;
 	timelock: Contract;
 	governorBeta: Contract;
 }
@@ -19,7 +19,7 @@ export async function governanceFixture(
 	[wallet]: Wallet[],
 	provider: providers.Web3Provider
 ): Promise<GovernanceFixture> {
-	// deploy CTX, sending the total supply to the deployer
+	// deploy ATG, sending the total supply to the deployer
 	const { timestamp: now } = await provider.getBlock("latest");
 	let nonce = await wallet.getTransactionCount();
 	nonce++;
@@ -34,7 +34,7 @@ export async function governanceFixture(
 		nonce: nonce++,
 	});
 
-	const ctx = await deployContract(wallet, Ctx, [wallet.address, timelockAddress, now + 60 * 60]);
+	const ATG = await deployContract(wallet, ATG, [wallet.address, timelockAddress, now + 60 * 60]);
 
 	const timelock = await deployContract(wallet, Timelock, [governorBetaAddress, DELAY]);
 
@@ -43,9 +43,9 @@ export async function governanceFixture(
 	// deploy governorBeta
 	const governorBeta = await deployContract(wallet, GovernorBeta, [
 		timelock.address,
-		ctx.address,
+		ATG.address,
 		wallet.address,
 	]);
 	expect(governorBeta.address).to.be.eq(governorBetaAddress);
-	return { ctx, timelock, governorBeta };
+	return { ATG, timelock, governorBeta };
 }

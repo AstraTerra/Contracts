@@ -15,13 +15,13 @@ const BTCVaultHandler = async (hre: HardhatRuntimeEnvironment) => {
 		try {
 			handlerContract = await deployments.get("BTCVaultHandler");
 		} catch (error) {
-			let tcap = await deployments.get("TCAP");
+			let HMKT = await deployments.get("HMKT");
 			let BTCContract = await deployments.get("WBTC");
 			let divisor = "10000000000";
 			let ratio = "150";
 			let burnFee = "1";
 			let liquidationPenalty = "10";
-			let tcapOracle = await deployments.get("TCAPOracle");
+			let HMKTOracle = await deployments.get("HMKTOracle");
 			let priceFeedETH = await deployments.get("WETHOracle");
 			let priceFeedBTC = await deployments.get("BTCOracle");
 			const timelock = await deployments.get("Timelock");
@@ -34,8 +34,8 @@ const BTCVaultHandler = async (hre: HardhatRuntimeEnvironment) => {
 					ratio,
 					burnFee,
 					liquidationPenalty,
-					tcapOracle.address,
-					tcap.address,
+					HMKTOracle.address,
+					HMKT.address,
 					BTCContract.address,
 					priceFeedBTC.address,
 					priceFeedETH.address,

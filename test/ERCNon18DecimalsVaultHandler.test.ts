@@ -19,12 +19,12 @@ export async function fakeDeployContract(name: string, deployer: Signer, args: a
 }
 
 describe("ERC20 Vaults With Non 18 Decimal", async function () {
-	let CTX: Contract;
+	let ATG: Contract;
 	let orchestrator: Contract;
 	let treasury: Contract;
-	let tCAP: Contract;
-	let aggregatorInterfaceTCAP: MockContract<Contract>;
-	let tCAPOracle: Contract;
+	let HMKT: Contract;
+	let aggregatorInterfaceHMKT: MockContract<Contract>;
+	let HMKTOracle: Contract;
 	let wBTC: Contract;
 	let aggregatorInterfaceWBTC: MockContract<Contract>;
 	let wBTCOracle: Contract;
@@ -37,20 +37,20 @@ describe("ERC20 Vaults With Non 18 Decimal", async function () {
 	let rewardHandlerWBTC: Contract;
 	let DAIVaultHandler: Contract;
 	let rewardHandlerDAI: Contract;
-	let tcapOracleValue: BigNumber;
+	let HMKTOracleValue: BigNumber;
 	let wBTCOracleValue: BigNumber;
 	let DAIOracleValue: BigNumber;
 	const [wallet, acc1, acc2, acc3, acc4] = waffle.provider.getWallets();
 
 	beforeEach(async () => {
 		const {timestamp: now} = await waffle.provider.getBlock("latest");
-		CTX = await deployContract("Ctx", wallet, [wallet.address, wallet.address, now + 60 * 60]);
+		ATG = await deployContract("ATG", wallet, [wallet.address, wallet.address, now + 60 * 60]);
 		orchestrator = await deployContract("Orchestrator", wallet, [wallet.address]);
 		treasury = await deployContract("ITreasury", wallet, [wallet.address]);
-		tCAP = await deployContract("TCAP", wallet, ["TCAP Token", "TCAP", 0, orchestrator.address]);
-		aggregatorInterfaceTCAP = await fakeDeployContract("AggregatorInterface", wallet, []);
-		tCAPOracle = await deployContract("ChainlinkOracle", wallet, [
-			aggregatorInterfaceTCAP.address,
+		HMKT = await deployContract("HMKT", wallet, ["HMKT Token", "HMKT", 0, orchestrator.address]);
+		aggregatorInterfaceHMKT = await fakeDeployContract("AggregatorInterface", wallet, []);
+		HMKTOracle = await deployContract("ChainlinkOracle", wallet, [
+			aggregatorInterfaceHMKT.address,
 			wallet.address,
 		]);
 		wBTC = await deployContract("WBTC", wallet, []);
@@ -77,8 +77,8 @@ describe("ERC20 Vaults With Non 18 Decimal", async function () {
 			"150",
 			"1",
 			"10",
-			tCAPOracle.address,
-			tCAP.address,
+			HMKTOracle.address,
+			HMKT.address,
 			wBTC.address,
 			wBTCOracle.address,
 			ETHOracle.address,
@@ -87,7 +87,7 @@ describe("ERC20 Vaults With Non 18 Decimal", async function () {
 		]);
 		rewardHandlerWBTC = await deployContract("RewardHandler", wallet, [
 			orchestrator.address,
-			CTX.address,
+			ATG.address,
 			wBTCVaultHandler.address,
 		]);
 
@@ -98,8 +98,8 @@ describe("ERC20 Vaults With Non 18 Decimal", async function () {
 			"150",
 			"1",
 			"10",
-			tCAPOracle.address,
-			tCAP.address,
+			HMKTOracle.address,
+			HMKT.address,
 			DAI.address,
 			DAIOracle.address,
 			ETHOracle.address,
@@ -107,8 +107,8 @@ describe("ERC20 Vaults With Non 18 Decimal", async function () {
 			0
 		]);
 		// add Vaults
-		await orchestrator.addTCAPVault(tCAP.address, wBTCVaultHandler.address);
-		await orchestrator.addTCAPVault(tCAP.address, DAIVaultHandler.address);
+		await orchestrator.addHMKTVault(HMKT.address, wBTCVaultHandler.address);
+		await orchestrator.addHMKTVault(HMKT.address, DAIVaultHandler.address);
 
 		// Mint tokens
 		// 10000 * 10 ** 8
@@ -116,16 +116,16 @@ describe("ERC20 Vaults With Non 18 Decimal", async function () {
 		// 10000 * 10 ** 18
 		await DAI.mint(wallet.address, "10000000000000000000000");
 
-		// Mock Price of Tcap
-		tcapOracleValue = BigNumber.from("214270586778100000000");
-		aggregatorInterfaceTCAP.latestRoundData.returns([
+		// Mock Price of HMKT
+		HMKTOracleValue = BigNumber.from("214270586778100000000");
+		aggregatorInterfaceHMKT.latestRoundData.returns([
 			BigNumber.from("55340232221128679816"),
-			tcapOracleValue,
+			HMKTOracleValue,
 			1616543796,
 			1616543819,
 			BigNumber.from("55340232221128679816"),
 		]);
-		expect(await tCAPOracle.getLatestAnswer()).to.be.eq(tcapOracleValue);
+		expect(await HMKTOracle.getLatestAnswer()).to.be.eq(HMKTOracleValue);
 
 		// Mock Price of wBTC
 		wBTCOracleValue = BigNumber.from("4271800000000");
@@ -164,9 +164,9 @@ describe("ERC20 Vaults With Non 18 Decimal", async function () {
 	});
 
 	it("...should have same amount of collateral in USD", async () => {
-		let tcapAmount = BigNumber.from(`${2 * 10 ** 18}`);
-		const wBTCCollateralRequired = await wBTCVaultHandler.requiredCollateral(tcapAmount);
-		const DAICollateralRequired = await DAIVaultHandler.requiredCollateral(tcapAmount);
+		let HMKTAmount = BigNumber.from(`${2 * 10 ** 18}`);
+		const wBTCCollateralRequired = await wBTCVaultHandler.requiredCollateral(HMKTAmount);
+		const DAICollateralRequired = await DAIVaultHandler.requiredCollateral(HMKTAmount);
 		let wBTCtoUSD = wBTCCollateralRequired
 			.mul(wBTCOracleValue)
 			.div(BigNumber.from(`${10 ** (8 + 8)}`));
@@ -192,35 +192,35 @@ describe("ERC20 Vaults With Non 18 Decimal", async function () {
 		).div(
 			DAIOracleValue.div(10 ** 8) // oracle has 8 decimals
 		);
-		// TCAP amount to be minted by both vaults
+		// HMKT amount to be minted by both vaults
 		// A weird number is chosen in order to check the precision of the math.
-		let tcapAmount = BigNumber.from("2418604651162790553");
+		let HMKTAmount = BigNumber.from("2418604651162790553");
 
 		await wBTCVaultHandler.createVault();
 		await wBTC.approve(wBTCVaultHandler.address, btcCollateralAmountDeposit);
 		await wBTCVaultHandler.addCollateral(btcCollateralAmountDeposit);
-		// Mint a small amount of TCAP
-		await wBTCVaultHandler.mint(tcapAmount);
+		// Mint a small amount of HMKT
+		await wBTCVaultHandler.mint(HMKTAmount);
 		const btcVaultRatio = await wBTCVaultHandler.getVaultRatio(1);
 		expect(btcVaultRatio).to.be.above(150);
 
 		await DAI.approve(DAIVaultHandler.address, DAICollateralAmountDeposit);
 		await DAIVaultHandler.createVault();
 		await DAIVaultHandler.addCollateral(DAICollateralAmountDeposit);
-		// Mint same amount of Tcap minted in Btc Vault
-		await DAIVaultHandler.mint(tcapAmount);
+		// Mint same amount of HMKT minted in Btc Vault
+		await DAIVaultHandler.mint(HMKTAmount);
 		const daiVaultRatio = await DAIVaultHandler.getVaultRatio(1);
 		expect(daiVaultRatio).to.be.above(150);
 
 		// Check that the vault ratio is the same since deposited amount in USD is same and
-		// The amount of TCAP minted is also the same.
-		// For TCAP = 2418604651162790553, btcVaultRatio is 192 and daiVaultRatio is 193
+		// The amount of HMKT minted is also the same.
+		// For HMKT = 2418604651162790553, btcVaultRatio is 192 and daiVaultRatio is 193
 		// The difference arises because of the integer precision of the EVM.
 		// A difference of 1 is acceptable in this case.
 		expect(btcVaultRatio.toNumber()).to.be.closeTo(daiVaultRatio.toNumber(), 1);
 	});
 
-	it("...should have same vault ratio after burning TCAP", async () => {
+	it("...should have same vault ratio after burning HMKT", async () => {
 		const USDAmountCollateralToDeposit = BigNumber.from(1000);
 		// equivalent in decimals places supported by WBTC
 		const btcCollateralAmountDeposit = USDAmountCollateralToDeposit.mul(
@@ -233,39 +233,39 @@ describe("ERC20 Vaults With Non 18 Decimal", async function () {
 		).div(
 			DAIOracleValue.div(10 ** 8) // oracle has 8 decimals
 		);
-		// TCAP amount to be minted by both vaults
+		// HMKT amount to be minted by both vaults
 		// A weird number is chosen in order to check the precision of the math.
-		// approx 2.4 TCAP
-		let tcapAmount = BigNumber.from("2418604651162790553");
+		// approx 2.4 HMKT
+		let HMKTAmount = BigNumber.from("2418604651162790553");
 
 		await wBTCVaultHandler.createVault();
 		await wBTC.approve(wBTCVaultHandler.address, btcCollateralAmountDeposit);
 		await wBTCVaultHandler.addCollateral(btcCollateralAmountDeposit);
-		// Mint a small amount of TCAP
-		await wBTCVaultHandler.mint(tcapAmount);
+		// Mint a small amount of HMKT
+		await wBTCVaultHandler.mint(HMKTAmount);
 		const oldBTCVaultRatio = await wBTCVaultHandler.getVaultRatio(1);
 		expect(oldBTCVaultRatio).to.be.above(150);
 
 		await DAI.approve(DAIVaultHandler.address, DAICollateralAmountDeposit);
 		await DAIVaultHandler.createVault();
 		await DAIVaultHandler.addCollateral(DAICollateralAmountDeposit);
-		// Mint same amount of Tcap minted in Btc Vault
-		await DAIVaultHandler.mint(tcapAmount);
+		// Mint same amount of HMKT minted in Btc Vault
+		await DAIVaultHandler.mint(HMKTAmount);
 		const oldDAIVaultRatio = await DAIVaultHandler.getVaultRatio(1);
 		expect(oldDAIVaultRatio).to.be.above(150);
 		expect(oldBTCVaultRatio.toNumber()).to.be.closeTo(oldDAIVaultRatio.toNumber(), 1);
 
-		// approx 0.4 TCAP
-		const tcapToBurn = BigNumber.from("400000000000000000");
-		const burnFee = await wBTCVaultHandler.getFee(tcapToBurn);
+		// approx 0.4 HMKT
+		const HMKTToBurn = BigNumber.from("400000000000000000");
+		const burnFee = await wBTCVaultHandler.getFee(HMKTToBurn);
 		// Make sure burn fee is same for both vaults
-		expect(burnFee).to.be.eq(await wBTCVaultHandler.getFee(tcapToBurn));
+		expect(burnFee).to.be.eq(await wBTCVaultHandler.getFee(HMKTToBurn));
 
-		await wBTCVaultHandler.burn(tcapToBurn, {value: burnFee});
+		await wBTCVaultHandler.burn(HMKTToBurn, {value: burnFee});
 		const newBTCVaultRatio = await wBTCVaultHandler.getVaultRatio(1);
 		expect(newBTCVaultRatio).to.be.above(oldBTCVaultRatio);
 
-		await DAIVaultHandler.burn(tcapToBurn, {value: burnFee});
+		await DAIVaultHandler.burn(HMKTToBurn, {value: burnFee});
 		const newDAIVaultRatio = await DAIVaultHandler.getVaultRatio(1);
 		expect(newDAIVaultRatio).to.be.above(oldDAIVaultRatio);
 
@@ -285,24 +285,24 @@ describe("ERC20 Vaults With Non 18 Decimal", async function () {
 		).div(
 			DAIOracleValue.div(10 ** 8) // oracle has 8 decimals
 		);
-		// TCAP amount to be minted by both vaults
+		// HMKT amount to be minted by both vaults
 		// A weird number is chosen in order to check the precision of the math.
-		// approx 2.4 TCAP
-		let tcapAmount = BigNumber.from("2418604651162790553");
+		// approx 2.4 HMKT
+		let HMKTAmount = BigNumber.from("2418604651162790553");
 
 		await wBTCVaultHandler.createVault();
 		await wBTC.approve(wBTCVaultHandler.address, btcCollateralAmountDeposit);
 		await wBTCVaultHandler.addCollateral(btcCollateralAmountDeposit);
-		// Mint a small amount of TCAP
-		await wBTCVaultHandler.mint(tcapAmount);
+		// Mint a small amount of HMKT
+		await wBTCVaultHandler.mint(HMKTAmount);
 		const oldBTCVaultRatio = await wBTCVaultHandler.getVaultRatio(1);
 		expect(oldBTCVaultRatio).to.be.above(150);
 
 		await DAI.approve(DAIVaultHandler.address, DAICollateralAmountDeposit);
 		await DAIVaultHandler.createVault();
 		await DAIVaultHandler.addCollateral(DAICollateralAmountDeposit);
-		// Mint same amount of Tcap minted in Btc Vault
-		await DAIVaultHandler.mint(tcapAmount);
+		// Mint same amount of HMKT minted in Btc Vault
+		await DAIVaultHandler.mint(HMKTAmount);
 		const oldDAIVaultRatio = await DAIVaultHandler.getVaultRatio(1);
 		expect(oldDAIVaultRatio).to.be.above(150);
 		expect(oldBTCVaultRatio.toNumber()).to.be.closeTo(oldDAIVaultRatio.toNumber(), 1);
@@ -348,24 +348,24 @@ describe("ERC20 Vaults With Non 18 Decimal", async function () {
 		).div(
 			DAIOracleValue.div(10 ** 8) // oracle has 8 decimals
 		);
-		// TCAP amount to be minted by both vaults
+		// HMKT amount to be minted by both vaults
 		// A weird number is chosen in order to check the precision of the math.
-		// approx 2.4 TCAP
-		let tcapAmount = BigNumber.from("2418604651162790553");
+		// approx 2.4 HMKT
+		let HMKTAmount = BigNumber.from("2418604651162790553");
 
 		await wBTCVaultHandler.createVault();
 		await wBTC.approve(wBTCVaultHandler.address, btcCollateralAmountDeposit);
 		await wBTCVaultHandler.addCollateral(btcCollateralAmountDeposit);
-		// Mint a small amount of TCAP
-		await wBTCVaultHandler.mint(tcapAmount);
+		// Mint a small amount of HMKT
+		await wBTCVaultHandler.mint(HMKTAmount);
 		const oldBTCVaultRatio = await wBTCVaultHandler.getVaultRatio(1);
 		expect(oldBTCVaultRatio).to.be.above(150);
 
 		await DAI.approve(DAIVaultHandler.address, DAICollateralAmountDeposit);
 		await DAIVaultHandler.createVault();
 		await DAIVaultHandler.addCollateral(DAICollateralAmountDeposit);
-		// Mint same amount of Tcap minted in Btc Vault
-		await DAIVaultHandler.mint(tcapAmount);
+		// Mint same amount of HMKT minted in Btc Vault
+		await DAIVaultHandler.mint(HMKTAmount);
 		const oldDAIVaultRatio = await DAIVaultHandler.getVaultRatio(1);
 		expect(oldDAIVaultRatio).to.be.above(150);
 		expect(oldBTCVaultRatio.toNumber()).to.be.closeTo(oldDAIVaultRatio.toNumber(), 1);
@@ -399,7 +399,7 @@ describe("ERC20 Vaults With Non 18 Decimal", async function () {
 		expect(newBTCVaultRatio.toNumber()).to.be.closeTo(newDAIVaultRatio.toNumber(), 1);
 	});
 
-	it("...should have same requiredLiquidationTCAP when vault ratio goes down", async () => {
+	it("...should have same requiredLiquidationHMKT when vault ratio goes down", async () => {
 		const USDAmountCollateralToDeposit = BigNumber.from(1000);
 		// equivalent in decimals places supported by WBTC
 		const btcCollateralAmountDeposit = USDAmountCollateralToDeposit.mul(
@@ -412,24 +412,24 @@ describe("ERC20 Vaults With Non 18 Decimal", async function () {
 		).div(
 			DAIOracleValue.div(10 ** 8) // oracle has 8 decimals
 		);
-		// TCAP amount to be minted by both vaults
+		// HMKT amount to be minted by both vaults
 		// A weird number is chosen in order to check the precision of the math.
-		// approx 2.4 TCAP
-		let tcapAmount = BigNumber.from("2418604651162790553");
+		// approx 2.4 HMKT
+		let HMKTAmount = BigNumber.from("2418604651162790553");
 
 		await wBTCVaultHandler.createVault();
 		await wBTC.approve(wBTCVaultHandler.address, btcCollateralAmountDeposit);
 		await wBTCVaultHandler.addCollateral(btcCollateralAmountDeposit);
-		// Mint a small amount of TCAP
-		await wBTCVaultHandler.mint(tcapAmount);
+		// Mint a small amount of HMKT
+		await wBTCVaultHandler.mint(HMKTAmount);
 		const oldBTCVaultRatio = await wBTCVaultHandler.getVaultRatio(1);
 		expect(oldBTCVaultRatio).to.be.above(150);
 
 		await DAI.approve(DAIVaultHandler.address, DAICollateralAmountDeposit);
 		await DAIVaultHandler.createVault();
 		await DAIVaultHandler.addCollateral(DAICollateralAmountDeposit);
-		// Mint same amount of Tcap minted in Btc Vault
-		await DAIVaultHandler.mint(tcapAmount);
+		// Mint same amount of HMKT minted in Btc Vault
+		await DAIVaultHandler.mint(HMKTAmount);
 		const oldDAIVaultRatio = await DAIVaultHandler.getVaultRatio(1);
 		expect(oldDAIVaultRatio).to.be.above(150);
 		expect(oldBTCVaultRatio.toNumber()).to.be.closeTo(oldDAIVaultRatio.toNumber(), 1);
@@ -461,11 +461,11 @@ describe("ERC20 Vaults With Non 18 Decimal", async function () {
 		expect(newDAIVaultRatio).to.be.below(150);
 		expect(newBTCVaultRatio.toNumber()).to.be.eq(newDAIVaultRatio.toNumber());
 
-		const BTCTcapLiquidationAmount = await wBTCVaultHandler.requiredLiquidationTCAP(1);
-		const DAITcapLiquidationAmount = await DAIVaultHandler.requiredLiquidationTCAP(1);
+		const BTCHMKTLiquidationAmount = await wBTCVaultHandler.requiredLiquidationHMKT(1);
+		const DAIHMKTLiquidationAmount = await DAIVaultHandler.requiredLiquidationHMKT(1);
 
-		expect(BTCTcapLiquidationAmount.toHexString() / 10 ** 18).to.be.closeTo(
-			DAITcapLiquidationAmount.toHexString() / 10 ** 18,
+		expect(BTCHMKTLiquidationAmount.toHexString() / 10 ** 18).to.be.closeTo(
+			DAIHMKTLiquidationAmount.toHexString() / 10 ** 18,
 			0.01
 		);
 	});
@@ -483,24 +483,24 @@ describe("ERC20 Vaults With Non 18 Decimal", async function () {
 		).div(
 			DAIOracleValue.div(10 ** 8) // oracle has 8 decimals
 		);
-		// TCAP amount to be minted by both vaults
+		// HMKT amount to be minted by both vaults
 		// A weird number is chosen in order to check the precision of the math.
-		// approx 2.4 TCAP
-		let tcapAmount = BigNumber.from("2418604651162790553");
+		// approx 2.4 HMKT
+		let HMKTAmount = BigNumber.from("2418604651162790553");
 
 		await wBTCVaultHandler.createVault();
 		await wBTC.approve(wBTCVaultHandler.address, btcCollateralAmountDeposit);
 		await wBTCVaultHandler.addCollateral(btcCollateralAmountDeposit);
-		// Mint a small amount of TCAP
-		await wBTCVaultHandler.mint(tcapAmount);
+		// Mint a small amount of HMKT
+		await wBTCVaultHandler.mint(HMKTAmount);
 		const oldBTCVaultRatio = await wBTCVaultHandler.getVaultRatio(1);
 		expect(oldBTCVaultRatio).to.be.above(150);
 
 		await DAI.approve(DAIVaultHandler.address, DAICollateralAmountDeposit);
 		await DAIVaultHandler.createVault();
 		await DAIVaultHandler.addCollateral(DAICollateralAmountDeposit);
-		// Mint same amount of Tcap minted in Btc Vault
-		await DAIVaultHandler.mint(tcapAmount);
+		// Mint same amount of HMKT minted in Btc Vault
+		await DAIVaultHandler.mint(HMKTAmount);
 		const oldDAIVaultRatio = await DAIVaultHandler.getVaultRatio(1);
 		expect(oldDAIVaultRatio).to.be.above(150);
 		expect(oldBTCVaultRatio.toNumber()).to.be.closeTo(oldDAIVaultRatio.toNumber(), 1);
@@ -558,24 +558,24 @@ describe("ERC20 Vaults With Non 18 Decimal", async function () {
 		).div(
 			DAIOracleValue.div(10 ** 8) // oracle has 8 decimals
 		);
-		// TCAP amount to be minted by both vaults
+		// HMKT amount to be minted by both vaults
 		// A weird number is chosen in order to check the precision of the math.
-		// approx 2.4 TCAP
-		let tcapAmount = BigNumber.from("2418604651162790553");
+		// approx 2.4 HMKT
+		let HMKTAmount = BigNumber.from("2418604651162790553");
 
 		await wBTCVaultHandler.createVault();
 		await wBTC.approve(wBTCVaultHandler.address, btcCollateralAmountDeposit);
 		await wBTCVaultHandler.addCollateral(btcCollateralAmountDeposit);
-		// Mint a small amount of TCAP
-		await wBTCVaultHandler.mint(tcapAmount);
+		// Mint a small amount of HMKT
+		await wBTCVaultHandler.mint(HMKTAmount);
 		const oldBTCVaultRatio = await wBTCVaultHandler.getVaultRatio(1);
 		expect(oldBTCVaultRatio).to.be.above(150);
 
 		await DAI.approve(DAIVaultHandler.address, DAICollateralAmountDeposit);
 		await DAIVaultHandler.createVault();
 		await DAIVaultHandler.addCollateral(DAICollateralAmountDeposit);
-		// Mint same amount of Tcap minted in Btc Vault
-		await DAIVaultHandler.mint(tcapAmount);
+		// Mint same amount of HMKT minted in Btc Vault
+		await DAIVaultHandler.mint(HMKTAmount);
 		const oldDAIVaultRatio = await DAIVaultHandler.getVaultRatio(1);
 		expect(oldDAIVaultRatio).to.be.above(150);
 		expect(oldBTCVaultRatio.toNumber()).to.be.closeTo(oldDAIVaultRatio.toNumber(), 1);
@@ -607,18 +607,18 @@ describe("ERC20 Vaults With Non 18 Decimal", async function () {
 		expect(newDAIVaultRatio).to.be.below(150);
 		expect(newBTCVaultRatio.toNumber()).to.be.eq(newDAIVaultRatio.toNumber());
 
-		const BTCTcapLiquidationAmount = await wBTCVaultHandler.requiredLiquidationTCAP(1);
-		const DAITcapLiquidationAmount = await DAIVaultHandler.requiredLiquidationTCAP(1);
+		const BTCHMKTLiquidationAmount = await wBTCVaultHandler.requiredLiquidationHMKT(1);
+		const DAIHMKTLiquidationAmount = await DAIVaultHandler.requiredLiquidationHMKT(1);
 
-		expect(BTCTcapLiquidationAmount.toHexString() / 10 ** 18).to.be.closeTo(
-			DAITcapLiquidationAmount.toHexString() / 10 ** 18,
+		expect(BTCHMKTLiquidationAmount.toHexString() / 10 ** 18).to.be.closeTo(
+			DAIHMKTLiquidationAmount.toHexString() / 10 ** 18,
 			0.01
 		);
 
-		const BTCBurnFee = await wBTCVaultHandler.getFee(BTCTcapLiquidationAmount);
-		const DAIBurnFee = await DAIVaultHandler.getFee(DAITcapLiquidationAmount);
-		await wBTCVaultHandler.liquidateVault(1, BTCTcapLiquidationAmount, {value: BTCBurnFee});
-		await DAIVaultHandler.liquidateVault(1, DAITcapLiquidationAmount, {value: DAIBurnFee});
+		const BTCBurnFee = await wBTCVaultHandler.getFee(BTCHMKTLiquidationAmount);
+		const DAIBurnFee = await DAIVaultHandler.getFee(DAIHMKTLiquidationAmount);
+		await wBTCVaultHandler.liquidateVault(1, BTCHMKTLiquidationAmount, {value: BTCBurnFee});
+		await DAIVaultHandler.liquidateVault(1, DAIHMKTLiquidationAmount, {value: DAIBurnFee});
 		expect(await wBTCVaultHandler.getVaultRatio(1)).to.be.eq(
 			await DAIVaultHandler.getVaultRatio(1)
 		);
@@ -632,14 +632,14 @@ describe("ERC20 Vaults With Non 18 Decimal", async function () {
 		).div(
 			wBTCOracleValue.div(10 ** 8) // oracle has 8 decimals
 		);
-		// TCAP amount to be minted
-		let tcapAmount = BigNumber.from("2418604651162790553");
+		// HMKT amount to be minted
+		let HMKTAmount = BigNumber.from("2418604651162790553");
 
 		await wBTCVaultHandler.createVault();
 		await wBTC.approve(wBTCVaultHandler.address, btcCollateralAmountDeposit);
 		await wBTCVaultHandler.addCollateral(btcCollateralAmountDeposit);
-		// Mint a small amount of TCAP
-		await wBTCVaultHandler.mint(tcapAmount);
+		// Mint a small amount of HMKT
+		await wBTCVaultHandler.mint(HMKTAmount);
 		const oldBTCVaultRatio = await wBTCVaultHandler.getVaultRatio(1);
 		expect(oldBTCVaultRatio).to.be.above(150);
 
@@ -658,10 +658,10 @@ describe("ERC20 Vaults With Non 18 Decimal", async function () {
 		const newBTCVaultRatio = await wBTCVaultHandler.getVaultRatio(1);
 		expect(newBTCVaultRatio).to.be.below(100);
 
-		const BTCTcapLiquidationAmount = await wBTCVaultHandler.requiredLiquidationTCAP(1);
+		const BTCHMKTLiquidationAmount = await wBTCVaultHandler.requiredLiquidationHMKT(1);
 
-		const BTCBurnFee = await wBTCVaultHandler.getFee(BTCTcapLiquidationAmount);
-		await wBTCVaultHandler.liquidateVault(1, BTCTcapLiquidationAmount, {value: BTCBurnFee});
+		const BTCBurnFee = await wBTCVaultHandler.getFee(BTCHMKTLiquidationAmount);
+		await wBTCVaultHandler.liquidateVault(1, BTCHMKTLiquidationAmount, {value: BTCBurnFee});
 
 		const BTCVaultRatioAfterLiquidation = await wBTCVaultHandler.getVaultRatio(1);
 		expect(BTCVaultRatioAfterLiquidation).to.be.eq(0);
@@ -670,7 +670,7 @@ describe("ERC20 Vaults With Non 18 Decimal", async function () {
 		expect(BTCVault.Debt).to.be.eq(0);
 	});
 
-	it("...should be able to burn TCAP when vault ratio falls below 100", async () => {
+	it("...should be able to burn HMKT when vault ratio falls below 100", async () => {
 		const USDAmountCollateralToDeposit = BigNumber.from(1000);
 		// equivalent in decimals places supported by WBTC
 		const btcCollateralAmountDeposit = USDAmountCollateralToDeposit.mul(
@@ -678,14 +678,14 @@ describe("ERC20 Vaults With Non 18 Decimal", async function () {
 		).div(
 			wBTCOracleValue.div(10 ** 8) // oracle has 8 decimals
 		);
-		// TCAP amount to be minted
-		let tcapAmount = BigNumber.from("2418604651162790553");
+		// HMKT amount to be minted
+		let HMKTAmount = BigNumber.from("2418604651162790553");
 
 		await wBTCVaultHandler.createVault();
 		await wBTC.approve(wBTCVaultHandler.address, btcCollateralAmountDeposit);
 		await wBTCVaultHandler.addCollateral(btcCollateralAmountDeposit);
-		// Mint a small amount of TCAP
-		await wBTCVaultHandler.mint(tcapAmount);
+		// Mint a small amount of HMKT
+		await wBTCVaultHandler.mint(HMKTAmount);
 		const oldBTCVaultRatio = await wBTCVaultHandler.getVaultRatio(1);
 		expect(oldBTCVaultRatio).to.be.above(150);
 
@@ -704,10 +704,10 @@ describe("ERC20 Vaults With Non 18 Decimal", async function () {
 		const newBTCVaultRatio = await wBTCVaultHandler.getVaultRatio(1);
 		expect(newBTCVaultRatio).to.be.below(100);
 
-		const BTCTcapBurnAmount = BigNumber.from("1000000000000000000"); // 1 TCAP
-		const BTCBurnFee = await wBTCVaultHandler.getFee(BTCTcapBurnAmount);
+		const BTCHMKTBurnAmount = BigNumber.from("1000000000000000000"); // 1 HMKT
+		const BTCBurnFee = await wBTCVaultHandler.getFee(BTCHMKTBurnAmount);
 		const vaultRatioBeforeBurning = await wBTCVaultHandler.getVaultRatio(1);
-		await wBTCVaultHandler.burn(BTCTcapBurnAmount, {value: BTCBurnFee});
+		await wBTCVaultHandler.burn(BTCHMKTBurnAmount, {value: BTCBurnFee});
 		const vaultRatioAfterBurning = await wBTCVaultHandler.getVaultRatio(1);
 		expect(vaultRatioAfterBurning).to.be.above(vaultRatioBeforeBurning);
 	});

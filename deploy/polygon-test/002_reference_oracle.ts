@@ -2,21 +2,21 @@ import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { DeployFunction } from "hardhat-deploy/types";
 import { deployments, hardhatArguments } from "hardhat";
 
-const tcapOracle: DeployFunction = async function (
+const HMKTOracle: DeployFunction = async function (
     hre: HardhatRuntimeEnvironment
 ) {
     if (hardhatArguments.network === "polygon") {
-        const tcapOracle = await deployments.getOrNull("TCAPOracle");
+        const HMKTOracle = await deployments.getOrNull("HMKTOracle");
         const maticOracle = await deployments.getOrNull("MATICOracle");
         const { log } = deployments;
 
-        if (!tcapOracle) {
+        if (!HMKTOracle) {
             const namedAccounts = await hre.getNamedAccounts();
             // Params TODO: complete address
-            const aggregator = "0xBb9749B5AD68574C106AC4F9cd5E1c400dbb88C3"; // TCAP Chainlink Oracle
+            const aggregator = "0xBb9749B5AD68574C106AC4F9cd5E1c400dbb88C3"; // HMKT Chainlink Oracle
 
-            const tcapOracleDeployment = await deployments.deploy(
-                "TCAPOracle",
+            const HMKTOracleDeployment = await deployments.deploy(
+                "HMKTOracle",
                 {
                     contract: "ChainlinkOracle",
                     from: namedAccounts.deployer,
@@ -26,10 +26,10 @@ const tcapOracle: DeployFunction = async function (
                 }
             );
             log(
-                `TCAP Oracle deployed at ${tcapOracleDeployment.address} for ${tcapOracleDeployment.receipt?.gasUsed}`
+                `HMKT Oracle deployed at ${HMKTOracleDeployment.address} for ${HMKTOracleDeployment.receipt?.gasUsed}`
             );
         } else {
-            log("TCAP Oracle already deployed");
+            log("HMKT Oracle already deployed");
         }
 
         if (!maticOracle) {
@@ -47,11 +47,11 @@ const tcapOracle: DeployFunction = async function (
                 }
             );
             log(
-                `TCAP Oracle deployed at ${maticOracleDeployment.address} for ${maticOracleDeployment.receipt?.gasUsed}`
+                `HMKT Oracle deployed at ${maticOracleDeployment.address} for ${maticOracleDeployment.receipt?.gasUsed}`
             );
         } else {
-            log("TCAP Oracle already deployed");
+            log("HMKT Oracle already deployed");
         }
     }
 };
-export default tcapOracle;
+export default HMKTOracle;

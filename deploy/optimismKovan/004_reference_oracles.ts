@@ -5,27 +5,27 @@ module.exports = async ({ getNamedAccounts, deployments }: any) => {
 		const { deployIfDifferent, log } = deployments;
 		const { deployer } = await getNamedAccounts();
 
-		let TCAPOracle, WETHOracle, DAIOracle;
+		let HMKTOracle, WETHOracle, DAIOracle;
 
 		const timelock = "0x71cEA4383F7FadDD1F17c960DE7b6A32bFDAf139"; // Testing address for now
 
-		const tcapAggregator = await deployments.getOrNull("AggregatorInterfaceTCAP");
+		const HMKTAggregator = await deployments.getOrNull("AggregatorInterfaceHMKT");
 
 		try {
-			TCAPOracle = await deployments.get("TCAPOracle");
+			HMKTOracle = await deployments.get("HMKTOracle");
 		} catch (error) {
 			log(error.message);
-			let oracleAddress = tcapAggregator.address;
+			let oracleAddress = HMKTAggregator.address;
 			const deployResult = await deployIfDifferent(
-				"TCAPOracle",
+				"HMKTOracle",
 				{ from: deployer },
 				"ChainlinkOracle",
 				oracleAddress,
 				timelock
 			);
-			TCAPOracle = await deployments.get("TCAPOracle");
+			HMKTOracle = await deployments.get("HMKTOracle");
 			if (deployResult.newlyDeployed) {
-				log(`Oracle deployed at ${TCAPOracle.address} for ${deployResult.receipt.gasUsed}`);
+				log(`Oracle deployed at ${HMKTOracle.address} for ${deployResult.receipt.gasUsed}`);
 			}
 		}
 

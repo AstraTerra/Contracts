@@ -17,7 +17,7 @@ const governorBeta: DeployFunction = async function (
             const ethers = hre.ethers;
 
             const namedAccounts = await hre.getNamedAccounts();
-            const ctx = "0x321C2fE4446C7c963dc41Dd58879AF648838f98D";
+            const ATG = "0x321C2fE4446C7c963dc41Dd58879AF648838f98D";
             const timelock = "0xa54074b2cc0e96a43048d4a68472f7f046ac0da8";
             const guardian = "0xa70b638b70154edfcbb8dbbbd04900f328f32c35";
 
@@ -28,7 +28,7 @@ const governorBeta: DeployFunction = async function (
                     from: namedAccounts.deployer,
                     args: [
                         timelock,
-                        ctx,
+                        ATG,
                         guardian,
                     ],
                     skipIfAlreadyDeployed: true,

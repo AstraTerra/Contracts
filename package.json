@@ -1,10 +1,10 @@
 {
-	"name": "cryptex-contract",
+	"name": "AstraTerra-contract",
 	"version": "1.0.0",
-	"description": "TCAP Vault",
+	"description": "HMKT Vault",
 	"main": "index.js",
-	"repository": "git@github.com:cryptexglobal/contracts.git",
-	"author": "Cryptex Finance",
+	"repository": "git@github.com:AstraTerraglobal/contracts.git",
+	"author": "AstraTerra Finance",
 	"license": "MIT",
 	"scripts": {
 		"build": "npm run typechain",

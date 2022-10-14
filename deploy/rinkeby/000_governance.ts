@@ -5,16 +5,16 @@ import { deployments, hardhatArguments } from "hardhat";
 const governance: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 	if (hardhatArguments.network === "rinkeby") {
 		console.log("RINKEBY DEPLOY");
-		const Ctx = await deployments.getOrNull("Ctx");
+		const ATG = await deployments.getOrNull("ATG");
 		const { log } = deployments;
-		if (!Ctx) {
+		if (!ATG) {
 			const ethers = hre.ethers;
 			const namedAccounts = await hre.getNamedAccounts();
 			const oneYear = 1640140333; // Wednesday, December 22, 2021 2:32:13 AM
 			const threeDays = 259200;
 			const [owner] = await ethers.getSigners();
 			let nonce = await owner.getTransactionCount();
-			const ctxAddress = ethers.utils.getContractAddress({
+			const ATGAddress = ethers.utils.getContractAddress({
 				from: namedAccounts.deployer,
 				nonce: nonce++,
 			});
@@ -29,12 +29,12 @@ const governance: DeployFunction = async function (hre: HardhatRuntimeEnvironmen
 				nonce: nonce++,
 			});
 
-			const ctxDeployment = await deployments.deploy("Ctx", {
+			const ATGDeployment = await deployments.deploy("ATG", {
 				from: namedAccounts.deployer,
 				args: [namedAccounts.deployer, timelockAddress, oneYear],
 			});
 
-			log(`Ctx deployed at ${ctxDeployment.address} for ${ctxDeployment.receipt?.gasUsed}`);
+			log(`ATG deployed at ${ATGDeployment.address} for ${ATGDeployment.receipt?.gasUsed}`);
 
 			const timelockDeployment = await deployments.deploy("Timelock", {
 				from: namedAccounts.deployer,
@@ -47,14 +47,14 @@ const governance: DeployFunction = async function (hre: HardhatRuntimeEnvironmen
 
 			const governorDeployment = await deployments.deploy("GovernorAlpha", {
 				from: namedAccounts.deployer,
-				args: [timelockAddress, ctxAddress],
+				args: [timelockAddress, ATGAddress],
 			});
 
 			log(
 				`Governor Alpha deployed at ${governorDeployment.address} for ${governorDeployment.receipt?.gasUsed}`
 			);
 		} else {
-			log("Ctx Token already deployed");
+			log("ATG Token already deployed");
 		}
 	}
 };

@@ -6,12 +6,12 @@ import "@openzeppelin/contracts/introspection/ERC165Checker.sol";
 import "./IVaultHandler.sol";
 import "./oracles/ChainlinkOracle.sol";
 import "./Proprietor.sol";
-import "./TCAP.sol";
+import "./HMKT.sol";
 
 /**
- * @title TCAP Orchestrator
- * @author Cryptex.finance
- * @notice Orchestrator contract in charge of managing the settings of the vaults, rewards and TCAP token. It acts as the owner of these contracts.
+ * @title HMKT Orchestrator
+ * @author AstraTerra.finance
+ * @notice Orchestrator contract in charge of managing the settings of the vaults, rewards and HMKT token. It acts as the owner of these contracts.
  */
 abstract contract IOrchestrator is Proprietor {
   /// @dev Enum which saves the available functions to emergency call.
@@ -26,7 +26,7 @@ abstract contract IOrchestrator is Proprietor {
 
   /** @dev Interface constants*/
   bytes4 private constant _INTERFACE_ID_IVAULT = 0x9e75ab0c;
-  bytes4 private constant _INTERFACE_ID_TCAP = 0xbd115939;
+  bytes4 private constant _INTERFACE_ID_HMKT = 0xbd115939;
   bytes4 private constant _INTERFACE_ID_CHAINLINK_ORACLE = 0x85be402b;
 
   /// @dev tracks which vault was emergency called
@@ -78,13 +78,13 @@ abstract contract IOrchestrator is Proprietor {
   }
 
   /**
-   * @notice Throws if TCAP Token is not valid
-   * @param _tcap address
+   * @notice Throws if HMKT Token is not valid
+   * @param _HMKT address
    */
-  modifier validTCAP(TCAP _tcap) {
+  modifier validHMKT(HMKT _HMKT) {
     require(
-      ERC165Checker.supportsInterface(address(_tcap), _INTERFACE_ID_TCAP),
-      "IOrchestrator::validTCAP: not a valid TCAP ERC20"
+      ERC165Checker.supportsInterface(address(_HMKT), _INTERFACE_ID_HMKT),
+      "IOrchestrator::validHMKT: not a valid HMKT ERC20"
     );
     _;
   }
@@ -228,67 +228,67 @@ abstract contract IOrchestrator is Proprietor {
   }
 
   /**
-   * @notice Enables or disables the TCAP Cap
-   * @param _tcap address
+   * @notice Enables or disables the HMKT Cap
+   * @param _HMKT address
    * @param _enable bool
    * @dev Only owner can call it
-   * @dev Validates if _tcap is valid
+   * @dev Validates if _HMKT is valid
    */
-  function enableTCAPCap(TCAP _tcap, bool _enable)
+  function enableHMKTCap(HMKT _HMKT, bool _enable)
     external
     onlyOwner
-    validTCAP(_tcap)
+    validHMKT(_HMKT)
   {
-    _tcap.enableCap(_enable);
+    _HMKT.enableCap(_enable);
   }
 
   /**
-   * @notice Sets the TCAP maximum minting value
-   * @param _tcap address
+   * @notice Sets the HMKT maximum minting value
+   * @param _HMKT address
    * @param _cap uint value
    * @dev Only owner can call it
-   * @dev Validates if _tcap is valid
+   * @dev Validates if _HMKT is valid
    */
-  function setTCAPCap(TCAP _tcap, uint256 _cap)
+  function setHMKTCap(HMKT _HMKT, uint256 _cap)
     external
     onlyOwner
-    validTCAP(_tcap)
+    validHMKT(_HMKT)
   {
-    _tcap.setCap(_cap);
+    _HMKT.seHMKT(_cap);
   }
 
   /**
-   * @notice Adds Vault to TCAP ERC20
-   * @param _tcap address
+   * @notice Adds Vault to HMKT ERC20
+   * @param _HMKT address
    * @param _vault address
    * @dev Only owner can call it
-   * @dev Validates if _tcap is valid
+   * @dev Validates if _HMKT is valid
    * @dev Validates if _vault is valid
    */
-  function addTCAPVault(TCAP _tcap, IVaultHandler _vault)
+  function addHMKTVault(HMKT _HMKT, IVaultHandler _vault)
     external
     onlyOwner
-    validTCAP(_tcap)
+    validHMKT(_HMKT)
     validVault(_vault)
   {
-    _tcap.addVaultHandler(address(_vault));
+    _HMKT.addVaultHandler(address(_vault));
   }
 
   /**
-   * @notice Removes Vault to TCAP ERC20
-   * @param _tcap address
+   * @notice Removes Vault to HMKT ERC20
+   * @param _HMKT address
    * @param _vault address
    * @dev Only owner can call it
-   * @dev Validates if _tcap is valid
+   * @dev Validates if _HMKT is valid
    * @dev Validates if _vault is valid
    */
-  function removeTCAPVault(TCAP _tcap, IVaultHandler _vault)
+  function removeHMKTVault(HMKT _HMKT, IVaultHandler _vault)
     external
     onlyOwner
-    validTCAP(_tcap)
+    validHMKT(_HMKT)
     validVault(_vault)
   {
-    _tcap.removeVaultHandler(address(_vault));
+    _HMKT.removeVaultHandler(address(_vault));
   }
 
   /**

@@ -20,8 +20,8 @@ const hardVaults: DeployFunction = async function (hre: HardhatRuntimeEnvironmen
 		const ratio = "110";
 		const burnFee = "50";
 		const liquidationPenalty = "5";
-		const tcapOracle = "0xa4e581BD159B869e8290707A7FBF841fe7FE97b6";
-		const tcapAddress = "0x16c52ceece2ed57dad87319d91b5e3637d50afa4";
+		const HMKTOracle = "0xa4e581BD159B869e8290707A7FBF841fe7FE97b6";
+		const HMKTAddress = "0x16c52ceece2ed57dad87319d91b5e3637d50afa4";
 		const ethOracle = "0x2cFeaf282FE9ae050b210e7BDa65D288C40c6104";
 		const daiOracle = "0x6b5a75f38BeA1Ef59Bc43A5d9602e77Bcbe65e46";
 		const wbtcOracle =  "0x07Ef20895ceF20855D29ACeDCa35E6f96AF4fF49"
@@ -34,7 +34,7 @@ const hardVaults: DeployFunction = async function (hre: HardhatRuntimeEnvironmen
 		let DAIContract = "0x6b175474e89094c44da98b954eedeac495271d0f";
 		let USDCContract = "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48";
 
-		let minimumTCAP = "20000000000000000000"; // 20 TCAP
+		let minimumHMKT = "20000000000000000000"; // 20 HMKT
 
 
 		if (!hardETHVaultHandler) {
@@ -47,13 +47,13 @@ const hardVaults: DeployFunction = async function (hre: HardhatRuntimeEnvironmen
 					ratio,
 					burnFee,
 					liquidationPenalty,
-					tcapOracle,
-					tcapAddress,
+					HMKTOracle,
+					HMKTAddress,
 					WETHContract,
 					ethOracle,
 					ethOracle,
 					treasury,
-					minimumTCAP
+					minimumHMKT
 				],
 				skipIfAlreadyDeployed: true,
 				log: true,
@@ -76,13 +76,13 @@ const hardVaults: DeployFunction = async function (hre: HardhatRuntimeEnvironmen
 					ratio,
 					burnFee,
 					liquidationPenalty,
-					tcapOracle,
-					tcapAddress,
+					HMKTOracle,
+					HMKTAddress,
 					DAIContract,
 					daiOracle,
 					ethOracle,
 					treasury,
-					minimumTCAP
+					minimumHMKT
 				],
 				skipIfAlreadyDeployed: true,
 				log: true,
@@ -104,13 +104,13 @@ const hardVaults: DeployFunction = async function (hre: HardhatRuntimeEnvironmen
 					ratio,
 					burnFee,
 					liquidationPenalty,
-					tcapOracle,
-					tcapAddress,
+					HMKTOracle,
+					HMKTAddress,
 					USDCContract,
 					usdcOracle,
 					ethOracle,
 					treasury,
-					minimumTCAP
+					minimumHMKT
 				],
 				skipIfAlreadyDeployed: true,
 				log: true,
@@ -133,13 +133,13 @@ const hardVaults: DeployFunction = async function (hre: HardhatRuntimeEnvironmen
 					ratio,
 					burnFee,
 					liquidationPenalty,
-					tcapOracle,
-					tcapAddress,
+					HMKTOracle,
+					HMKTAddress,
 					WBTCContract,
 					wbtcOracle,
 					ethOracle,
 					treasury,
-					minimumTCAP
+					minimumHMKT
 				],
 				skipIfAlreadyDeployed: true,
 				log: true,

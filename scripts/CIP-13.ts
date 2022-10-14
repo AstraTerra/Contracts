@@ -8,9 +8,9 @@ async function main() {
 	const ethers = hre.ethers;
 
 	let orchestratorAddress = "0x373C74BcE7893097ab26d22f05691907D4f2c18e";
-	let tcap = await deployments.get("TCAP");
+	let HMKT = await deployments.get("HMKT");
 
-	let tcapContract = await ethers.getContractAt("TCAP", tcap.address);
+	let HMKTContract = await ethers.getContractAt("HMKT", HMKT.address);
 	let usdcHardVault = "0xa8CcA36A624215a39D5af6854ac24868559424d3";
 	let daiHardVault = "0xA5b3Bb6e1f206624B3B8CE0c6A0f7614fd35Fa03";
 	let ethHardVault = "0xc2Ba6B8E0EE3cf48B045D966F1dCda767df74833";
@@ -19,30 +19,30 @@ async function main() {
 	const abi = new ethers.utils.AbiCoder();
 	const targets = [orchestratorAddress, orchestratorAddress, orchestratorAddress, orchestratorAddress];
 	const values = [BigNumber.from(0), BigNumber.from(0), BigNumber.from(0), BigNumber.from(0)];
-	const signatures = ["addTCAPVault(address,address)", "addTCAPVault(address,address)", "addTCAPVault(address,address)", "addTCAPVault(address,address)"];
+	const signatures = ["addHMKTVault(address,address)", "addHMKTVault(address,address)", "addHMKTVault(address,address)", "addHMKTVault(address,address)"];
 	const calldatas = [
-		abi.encode(["address", "address"], [tcap.address, usdcHardVault]),
-		abi.encode(["address", "address"], [tcap.address, daiHardVault]),
-		abi.encode(["address", "address"], [tcap.address, ethHardVault]),
-		abi.encode(["address", "address"], [tcap.address, wbtcHardVault]),
+		abi.encode(["address", "address"], [HMKT.address, usdcHardVault]),
+		abi.encode(["address", "address"], [HMKT.address, daiHardVault]),
+		abi.encode(["address", "address"], [HMKT.address, ethHardVault]),
+		abi.encode(["address", "address"], [HMKT.address, wbtcHardVault]),
 	];
-	const description = "CIP-13: Add hard mode vaults to TCAP";
+	const description = "CIP-13: Add hard mode vaults to HMKT";
 	console.log(targets);
 	console.log(values);
 	console.log(signatures);
 	console.log(calldatas);
 	console.log(description);
 
-	let usdcStatus = await tcapContract.vaultHandlers(usdcHardVault);
+	let usdcStatus = await HMKTContract.vaultHandlers(usdcHardVault);
 	console.log(usdcStatus);
 
-	let ethStatus = await tcapContract.vaultHandlers(ethHardVault);
+	let ethStatus = await HMKTContract.vaultHandlers(ethHardVault);
 	console.log(ethStatus);
 
-	let daiStatus = await tcapContract.vaultHandlers(daiHardVault);
+	let daiStatus = await HMKTContract.vaultHandlers(daiHardVault);
 	console.log(daiStatus);
 
-	let wbtcStatus = await tcapContract.vaultHandlers(wbtcHardVault);
+	let wbtcStatus = await HMKTContract.vaultHandlers(wbtcHardVault);
 	console.log(wbtcStatus);
 
 
@@ -65,16 +65,16 @@ async function main() {
 		// Validate Results
 		console.log("==================Check Results==================");
 
-		usdcStatus = await tcapContract.vaultHandlers(usdcHardVault);
+		usdcStatus = await HMKTContract.vaultHandlers(usdcHardVault);
 		console.log(usdcStatus);
 
-		ethStatus = await tcapContract.vaultHandlers(ethHardVault);
+		ethStatus = await HMKTContract.vaultHandlers(ethHardVault);
 		console.log(ethStatus);
 
-		daiStatus = await tcapContract.vaultHandlers(daiHardVault);
+		daiStatus = await HMKTContract.vaultHandlers(daiHardVault);
 		console.log(daiStatus);
 
-		wbtcStatus = await tcapContract.vaultHandlers(wbtcHardVault);
+		wbtcStatus = await HMKTContract.vaultHandlers(wbtcHardVault);
 		console.log(wbtcStatus);
 	}
 }

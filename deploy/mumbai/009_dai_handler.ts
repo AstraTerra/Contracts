@@ -16,7 +16,7 @@ module.exports = async (hre: HardhatRuntimeEnvironment) => {
 			handlerContract = await deployments.get("DAIVaultHandler");
 		} catch (error) {
 			try {
-				let tcap = await deployments.get("TCAP");
+				let HMKT = await deployments.get("HMKT");
 
 				let DAIContract = await deployments.get("DAI");
 
@@ -24,7 +24,7 @@ module.exports = async (hre: HardhatRuntimeEnvironment) => {
 				let ratio = process.env.RATIO as string;
 				let burnFee = process.env.BURN_FEE as string;
 				let liquidationPenalty = process.env.LIQUIDATION_PENALTY as string;
-				let tcapOracle = await deployments.get("TCAPOracle");
+				let HMKTOracle = await deployments.get("HMKTOracle");
 				let priceFeedETH = await deployments.get("WMATICOracle");
 				let priceFeedDAI = await deployments.get("DAIOracle");
 				const polygonTreasuryDeployResult = await deployments.get("PolygonTreasury");
@@ -39,8 +39,8 @@ module.exports = async (hre: HardhatRuntimeEnvironment) => {
 						ratio,
 						burnFee,
 						liquidationPenalty,
-						tcapOracle.address,
-						tcap.address,
+						HMKTOracle.address,
+						HMKT.address,
 						DAIContract.address,
 						priceFeedDAI.address,
 						priceFeedETH.address,

@@ -16,7 +16,7 @@ const DAIVaultHandler = async (hre: HardhatRuntimeEnvironment) => {
 			handlerContract = await deployments.get("DAIVaultHandler");
 		} catch (error) {
 			try {
-				let tcap = await deployments.get("TCAP");
+				let HMKT = await deployments.get("HMKT");
 
 				let DAIContract = "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1";
 
@@ -24,7 +24,7 @@ const DAIVaultHandler = async (hre: HardhatRuntimeEnvironment) => {
 				let ratio = process.env.RATIO as string;
 				let burnFee = process.env.BURN_FEE as string;
 				let liquidationPenalty = process.env.LIQUIDATION_PENALTY as string;
-				let tcapOracle = await deployments.get("TCAPOracle");
+				let HMKTOracle = await deployments.get("HMKTOracle");
 				let priceFeedETH = await deployments.get("WETHOracle");
 				let priceFeedDAI = await deployments.get("DAIOracle");
 				const timelock = "0x71cEA4383F7FadDD1F17c960DE7b6A32bFDAf139"; // Testing address for now
@@ -39,8 +39,8 @@ const DAIVaultHandler = async (hre: HardhatRuntimeEnvironment) => {
 						ratio,
 						burnFee,
 						liquidationPenalty,
-						tcapOracle.address,
-						tcap.address,
+						HMKTOracle.address,
+						HMKT.address,
 						DAIContract,
 						priceFeedDAI.address,
 						priceFeedETH.address,

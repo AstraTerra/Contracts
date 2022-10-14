@@ -19,11 +19,11 @@ describe("scenario:TreasuryVester", () => {
 	const [wallet] = waffle.provider.getWallets();
 	const loadFixture = waffle.createFixtureLoader([wallet], waffle.provider);
 
-	let ctx: Contract;
+	let ATG: Contract;
 	let timelock: Contract;
 	beforeEach(async () => {
 		const fixture = await loadFixture(governanceFixture);
-		ctx = fixture.ctx;
+		ATG = fixture.ATG;
 		timelock = fixture.timelock;
 	});
 
@@ -39,7 +39,7 @@ describe("scenario:TreasuryVester", () => {
 		vestingCliff = vestingBegin + 60;
 		vestingEnd = vestingBegin + 60 * 60 * 24 * 365;
 		treasuryVester = await waffle.deployContract(wallet, TreasuryVester, [
-			ctx.address,
+			ATG.address,
 			timelock.address,
 			vestingAmount,
 			vestingBegin,
@@ -48,7 +48,7 @@ describe("scenario:TreasuryVester", () => {
 		]);
 
 		// fund the treasury
-		await ctx.transfer(treasuryVester.address, vestingAmount);
+		await ATG.transfer(treasuryVester.address, vestingAmount);
 	});
 
 	it("setRecipient:fail", async () => {
@@ -66,14 +66,14 @@ describe("scenario:TreasuryVester", () => {
 	it("claim:~half", async () => {
 		await mineBlock(waffle.provider, vestingBegin + Math.floor((vestingEnd - vestingBegin) / 2));
 		await treasuryVester.claim();
-		const balance = await ctx.balanceOf(timelock.address);
+		const balance = await ATG.balanceOf(timelock.address);
 		expect(vestingAmount.div(2).sub(balance).abs().lte(vestingAmount.div(2).div(10000))).to.be.true;
 	});
 
 	it("claim:all", async () => {
 		await mineBlock(waffle.provider, vestingEnd);
 		await treasuryVester.claim();
-		const balance = await ctx.balanceOf(timelock.address);
+		const balance = await ATG.balanceOf(timelock.address);
 		expect(balance).to.be.eq(vestingAmount);
 	});
 });

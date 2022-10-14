@@ -5,9 +5,9 @@ import "../IOrchestrator.sol";
 import "./PolygonL2Messenger.sol";
 
 /**
- * @title TCAP Polygon Orchestrator
- * @author Cryptex.finance
- * @notice Orchestrator contract in charge of managing the settings of the vaults, rewards and TCAP token. It acts as the owner of these contracts.
+ * @title HMKT Polygon Orchestrator
+ * @author AstraTerra.finance
+ * @notice Orchestrator contract in charge of managing the settings of the vaults, rewards and HMKT token. It acts as the owner of these contracts.
  */
 contract PolygonOrchestrator is IOrchestrator {
   /// @notice Address of the polygonMessenger contract.

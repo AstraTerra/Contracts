@@ -7,9 +7,9 @@ import "./IWMATIC.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 
 /**
- * @title MATIC TCAP Vault
- * @author Cryptex.finance
- * @notice Contract in charge of handling the TCAP Vault and stake using a MATIC and WMATIC
+ * @title MATIC HMKT Vault
+ * @author AstraTerra.finance
+ * @notice Contract in charge of handling the HMKT Vault and stake using a MATIC and WMATIC
  */
 contract MATICVaultHandler is IVaultHandler {
   /// @notice Open Zeppelin libraries
@@ -22,12 +22,12 @@ contract MATICVaultHandler is IVaultHandler {
    * @param _ratio uint256
    * @param _burnFee uint256
    * @param _liquidationPenalty uint256
-   * @param _tcapOracle address
-   * @param _tcapAddress address
+   * @param _HMKTOracle address
+   * @param _HMKTAddress address
    * @param _collateralAddress address
    * @param _collateralOracle address
    * @param _treasury address
-   * @param _minimumTCAP uint256
+   * @param _minimumHMKT uint256
    */
   constructor(
     Orchestrator _orchestrator,
@@ -35,13 +35,13 @@ contract MATICVaultHandler is IVaultHandler {
     uint256 _ratio,
     uint256 _burnFee,
     uint256 _liquidationPenalty,
-    address _tcapOracle,
-    TCAP _tcapAddress,
+    address _HMKTOracle,
+    HMKT _HMKTAddress,
     address _collateralAddress,
     address _collateralOracle,
     address _maticOracle,
     address _treasury,
-    uint256 _minimumTCAP
+    uint256 _minimumHMKT
   )
     IVaultHandler(
       _orchestrator,
@@ -49,13 +49,13 @@ contract MATICVaultHandler is IVaultHandler {
       _ratio,
       _burnFee,
       _liquidationPenalty,
-      _tcapOracle,
-      _tcapAddress,
+      _HMKTOracle,
+      _HMKTAddress,
       _collateralAddress,
       _collateralOracle,
       _maticOracle,
       _treasury,
-      _minimumTCAP
+      _minimumHMKT
     )
   {}
 

@@ -9,7 +9,7 @@ import { deployContract } from "../utils";
 const [wallet, acc1, acc2, acc3, acc4] = waffle.provider.getWallets();
 const loadFixture = waffle.createFixtureLoader([wallet], waffle.provider);
 
-let ctx: Contract;
+let ATG: Contract;
 let timelock: Contract;
 let governorBeta: Contract;
 let targets: string[];
@@ -22,10 +22,10 @@ let polygonOrchestrator: Contract;
 let fxChild: Contract;
 let fxRoot: Contract;
 let stateSender: Contract;
-let aggregatorInterfaceTCAP: Contract;
-let tCAP: Contract;
+let aggregatorInterfaceHMKT: Contract;
+let HMKT: Contract;
 let polygonTreasury: Contract;
-let tCAPOracle: Contract;
+let HMKTOracle: Contract;
 let wMATIC: Contract;
 let wMATICOracle: Contract;
 let wMATICVaultHandler: Contract;
@@ -116,8 +116,8 @@ async function executeProposal(
 	[status] = await governorBeta.functions.state(proposalID.toString());
 	expect(status).to.be.eq(ProposalState.Pending);
 
-	await ctx.functions.transfer(acc1.address, "100000000000000000000000");
-	await ctx.connect(acc1).delegate(acc1.address);
+	await ATG.functions.transfer(acc1.address, "100000000000000000000000");
+	await ATG.connect(acc1).delegate(acc1.address);
 	await hre.network.provider.send("evm_mine");
 
 	// 		Mine block to surpass votingDelay
@@ -152,10 +152,10 @@ async function executeProposal(
 describe("Polygon Integration Test", async function () {
 	beforeEach(async () => {
 		const fixture = await loadFixture(governanceFixture);
-		ctx = fixture.ctx;
+		ATG = fixture.ATG;
 		timelock = fixture.timelock;
 		governorBeta = fixture.governorBeta;
-		await ctx.functions.delegate(wallet.address);
+		await ATG.functions.delegate(wallet.address);
 		stateSender = await deployContract("StateSender", wallet, []);
 		fxRoot = await deployContract("FxRoot", wallet, [stateSender.address]);
 		fxChild = await deployContract("MockFxChild", wallet, []);
@@ -194,20 +194,20 @@ describe("Polygon Integration Test", async function () {
 			timelock.address,
 			polygonMessenger.address,
 		]);
-		aggregatorInterfaceTCAP = await deployContract("AggregatorInterfaceTCAP", wallet, []);
-		tCAP = await deployContract("TCAP", wallet, [
-			"TCAP Token",
-			"TCAP",
+		aggregatorInterfaceHMKT = await deployContract("AggregatorInterfaceHMKT", wallet, []);
+		HMKT = await deployContract("HMKT", wallet, [
+			"HMKT Token",
+			"HMKT",
 			0,
 			polygonOrchestrator.address,
 		]);
-		tCAPOracle = await deployContract("ChainlinkOracle", wallet, [
-			aggregatorInterfaceTCAP.address,
+		HMKTOracle = await deployContract("ChainlinkOracle", wallet, [
+			aggregatorInterfaceHMKT.address,
 			timelock.address,
 		]);
 		wMATIC = await deployContract("WMATIC", wallet, []);
 		wMATICOracle = await deployContract("ChainlinkOracle", wallet, [
-			aggregatorInterfaceTCAP.address,
+			aggregatorInterfaceHMKT.address,
 			timelock.address,
 		]);
 
@@ -217,8 +217,8 @@ describe("Polygon Integration Test", async function () {
 			"200",
 			"1",
 			"10",
-			tCAPOracle.address,
-			tCAP.address,
+			HMKTOracle.address,
+			HMKT.address,
 			wMATIC.address,
 			wMATICOracle.address,
 			wMATICOracle.address,
@@ -228,16 +228,16 @@ describe("Polygon Integration Test", async function () {
 	});
 
 	it("...Add new vault without Governance", async () => {
-		expect(await tCAP.vaultHandlers(wMATICVaultHandler.address)).to.be.false;
-		let ABI = ["function addTCAPVault(address,address)"];
+		expect(await HMKT.vaultHandlers(wMATICVaultHandler.address)).to.be.false;
+		let ABI = ["function addHMKTVault(address,address)"];
 		let iface = new hre.ethers.utils.Interface(ABI);
-		const _data = iface.encodeFunctionData("addTCAPVault", [
-			tCAP.address,
+		const _data = iface.encodeFunctionData("addHMKTVault", [
+			HMKT.address,
 			wMATICVaultHandler.address,
 		]);
 		const _callData = abiCoder.encode(["address", "bytes"], [polygonOrchestrator.address, _data]);
 		await deploymentPolygonMessenger.functions.processMessageFromRoot(1, wallet.address, _callData);
-		expect(await tCAP.vaultHandlers(wMATICVaultHandler.address)).to.be.true;
+		expect(await HMKT.vaultHandlers(wMATICVaultHandler.address)).to.be.true;
 	});
 
 	it("...Transfer OwnerShip to DAO post setup", async () => {
@@ -287,12 +287,12 @@ describe("Polygon Integration Test", async function () {
 	it("...Add new vault through Governance", async () => {
 		await transferOwnershipToDAO();
 
-		expect(await tCAP.vaultHandlers(wMATICVaultHandler.address)).to.be.false;
+		expect(await HMKT.vaultHandlers(wMATICVaultHandler.address)).to.be.false;
 
-		let ABI = ["function addTCAPVault(address,address)"];
+		let ABI = ["function addHMKTVault(address,address)"];
 		let iface = new hre.ethers.utils.Interface(ABI);
-		let _data = iface.encodeFunctionData("addTCAPVault", [
-			tCAP.address,
+		let _data = iface.encodeFunctionData("addHMKTVault", [
+			HMKT.address,
 			wMATICVaultHandler.address,
 		]);
 		let _callData = abiCoder.encode(["address", "bytes"], [polygonOrchestrator.address, _data]);
@@ -303,6 +303,6 @@ describe("Polygon Integration Test", async function () {
 		callDatas = [abiCoder.encode(["address", "bytes"], [polygonMessenger.address, _callData])];
 
 		await executeProposal(targets, values, signatures, callDatas);
-		expect(await tCAP.vaultHandlers(wMATICVaultHandler.address)).to.be.true;
+		expect(await HMKT.vaultHandlers(wMATICVaultHandler.address)).to.be.true;
 	});
 });

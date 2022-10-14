@@ -26,7 +26,7 @@ module.exports = async ({ getNamedAccounts, deployments }: any) => {
 	let DAIHandler = await deployments.get("DAIVaultHandler");
 	let WMATICHandler = await deployments.get("MATICVaultHandler");
 	let OrchestratorDeployment = await deployments.get("PolygonOrchestrator");
-	let tcap = await deployments.get("TCAP");
+	let HMKT = await deployments.get("HMKT");
 	const { deployer } = await getNamedAccounts();
 
 	const deploymentPolygonMessengerDeployment = await deployments.get("deploymentPolygonMessenger");
@@ -40,9 +40,9 @@ module.exports = async ({ getNamedAccounts, deployments }: any) => {
 		deploymentPolygonMessenger,
 		OrchestratorDeployment.address,
 		deployer,
-		"addTCAPVault",
+		"addHMKTVault",
 		["address", "address"],
-		[tcap.address, WMATICHandler.address]
+		[HMKT.address, WMATICHandler.address]
 	);
 	await tx.wait();
 
@@ -50,15 +50,15 @@ module.exports = async ({ getNamedAccounts, deployments }: any) => {
 		deploymentPolygonMessenger,
 		OrchestratorDeployment.address,
 		deployer,
-		"addTCAPVault",
+		"addHMKTVault",
 		["address", "address"],
-		[tcap.address, DAIHandler.address]
+		[HMKT.address, DAIHandler.address]
 	);
 	await tx.wait();
 
-	let tcapContract = await ethershardhat.getContractAt("TCAP", tcap.address);
-	console.log("DAI Vault", await tcapContract.vaultHandlers(DAIHandler.address));
-	console.log("WETHHandler Vault", await tcapContract.vaultHandlers(WMATICHandler.address));
+	let HMKTContract = await ethershardhat.getContractAt("HMKT", HMKT.address);
+	console.log("DAI Vault", await HMKTContract.vaultHandlers(DAIHandler.address));
+	console.log("WETHHandler Vault", await HMKTContract.vaultHandlers(WMATICHandler.address));
 	tx = await makePolygonMessageCall(
 		deploymentPolygonMessenger,
 		OrchestratorDeployment.address,

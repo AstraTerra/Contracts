@@ -48,9 +48,9 @@ export async function createProposal(
 		await initialize();
 	}
 
-    let ctx = await deployments.get("Ctx");
-    let ctxContract= await ethers.getContractAt("Ctx",ctx.address, signer);
-    const x =  await ctxContract.delegate("0x8d6f396d210d385033b348bcae9e4f9ea4e045bd");
+    let ATG = await deployments.get("ATG");
+    let ATGContract= await ethers.getContractAt("ATG",ATG.address, signer);
+    const x =  await ATGContract.delegate("0x8d6f396d210d385033b348bcae9e4f9ea4e045bd");
     await ethers.provider.send("evm_mine", []);
 
 	console.log("==================Create Proposal==================");
