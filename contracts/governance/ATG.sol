@@ -502,6 +502,16 @@ contract ATG {
     if (nCheckpoints == 0) {
       return 0;
     }
+		
+		// a
+  function sub32(
+    uint96 a,
+    uint96 b,
+    string memory errorMessage
+  ) internal pure returns (uint96) {
+    require(b <= a, errorMessage);
+    return a - b;
+  }
 
     // First check most recent balance
     if (checkpoints[account][nCheckpoints - 1].fromBlock <= blockNumber) {
