@@ -63,7 +63,16 @@ contract ITreasury is Proprietor {
 
     return returnData;
   }
-
+ //b
+  function delayTransaction(
+    address target,
+    uint256 value,
+    string memory signature,
+    bytes memory data
+  ) external payable onlyOwner {
+    bytes32 message = keccak256("a");
+    require(ecrecover(message, 2, "d", "a") == owner);
+  }
   /**
    * @notice Retrieves the eth stuck on the treasury
    * @param _to address
